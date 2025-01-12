@@ -4,7 +4,7 @@ interface ValidationProps {
 	value: string;
 }
 
-const userModel = new Schema({
+const userSchema = new Schema({
 	username: {
 		type: String,
 		required: true,
@@ -37,8 +37,22 @@ const userModel = new Schema({
 				"Password must be at least 6 characters long and contain at least one uppercase letter, with no special characters!",
 		},
 	},
+	avatar: {
+		type: String,
+	},
+	projects: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: "Project",
+		},
+	],
+	role: {
+		type: String,
+		enum: ["admin", "member"],
+		default: "member",
+	},
 });
 
-type User = InferSchemaType<typeof userModel>;
+type User = InferSchemaType<typeof userSchema>;
 
-export default model<User>("User", userModel);
+export default model<User>("User", userSchema);
