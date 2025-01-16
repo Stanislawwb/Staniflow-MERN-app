@@ -1,7 +1,21 @@
-import { InferSchemaType, model, Schema } from "mongoose";
+import { HydratedDocument, model, Schema } from "mongoose";
+import bcrypt from "bcrypt";
 
 interface ValidationProps {
 	value: string;
+}
+
+interface IUser {
+	username: string;
+	email: string;
+	password: string;
+	avatar?: string;
+	projects: Schema.Types.ObjectId[];
+	role: "admin" | "member";
+}
+
+interface IUserDocument extends IUser, Document {
+	comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema({
@@ -29,16 +43,17 @@ const userSchema = new Schema({
 		type: String,
 		required: true,
 		select: false,
+		minLength: 6,
 		validate: {
 			validator: function (v: string) {
-				return /^(?=.*[A-Z])[A-Za-z]{6,}$/.test(v);
+				return /[A-Z]/.test(v) && /[!@#$%^&*(),.?":{}|<>]/.test(v);
 			},
-			message:
-				"Password must be at least 6 characters long and contain at least one uppercase letter, with no special characters!",
+			message: `Password must contain at least one uppercase letter and at least one special character`,
 		},
 	},
 	avatar: {
 		type: String,
+		default: "default-avatar.png",
 	},
 	projects: [
 		{
@@ -53,6 +68,32 @@ const userSchema = new Schema({
 	},
 });
 
-type User = InferSchemaType<typeof userSchema>;
+userSchema.pre("save", async function (next) {
+	if (!this.isModified("password")) return next();
 
-export default model<User>("User", userSchema);
+	try {
+		const saltRounds = 10;
+
+		this.password = await bcrypt.hash(this.password, saltRounds);
+
+		next();
+	} catch (error) {
+		if (error instanceof Error) {
+			next(error);
+		} else {
+			next(
+				new Error("An unknown error occurred during password hashing")
+			);
+		}
+	}
+});
+
+userSchema.methods.comparePassword = async function (
+	candidatePassword: string
+): Promise<boolean> {
+	return bcrypt.compare(candidatePassword, this.password);
+};
+
+export type UserDocument = HydratedDocument<IUserDocument>;
+
+export default model<IUserDocument>("User", userSchema);

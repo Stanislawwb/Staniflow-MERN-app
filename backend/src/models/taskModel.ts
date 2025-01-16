@@ -16,20 +16,29 @@ const taskSchema = new Schema(
 			enum: ["To Do", "In Progress", "Done"],
 			default: "To Do",
 			required: true,
+			index: true,
 		},
 		projectId: {
 			type: Schema.Types.ObjectId,
 			ref: "Project",
 			required: true,
+			index: true,
 		},
 		assignedTo: [
 			{
-				type: Schema.Types.ObjectId,
+				type: [Schema.Types.ObjectId],
 				ref: "User",
+				default: [],
 			},
 		],
 		dueDate: {
 			type: Date,
+			validate: {
+				validator: function (value: Date) {
+					return value >= new Date();
+				},
+				message: "Due date cannot be in the past",
+			},
 		},
 		priority: {
 			type: String,

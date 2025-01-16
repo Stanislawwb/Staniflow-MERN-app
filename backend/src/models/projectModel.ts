@@ -15,6 +15,7 @@ const projectSchema = new Schema(
 			type: String,
 			enum: ["active", "completed", "archived"],
 			default: "active",
+			index: true,
 		},
 		members: [
 			{
@@ -26,7 +27,7 @@ const projectSchema = new Schema(
 				role: {
 					type: String,
 					enum: ["admin", "editor", "viewer"],
-					deafault: "viewer",
+					default: "viewer",
 				},
 			},
 		],
@@ -34,38 +35,47 @@ const projectSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "User",
 			required: true,
+			index: true,
 		},
-		tags: [
-			{
-				type: String,
-			},
-		],
+		tags: {
+			type: [String],
+			default: [],
+		},
 		dueDate: {
 			type: Date,
-		},
-		activityLog: [
-			{
-				action: {
-					type: String,
-					enum: [
-						"project_created",
-						"task_added",
-						"status_updated",
-						"member_added",
-						"member_removed",
-					],
-					required: true,
+			validate: {
+				validator: function (value: Date) {
+					return value >= new Date();
 				},
-				userId: {
-					type: Schema.Types.ObjectId,
-					ref: "User",
-				},
-				timestamp: {
-					type: Date,
-					default: Date.now,
-				},
+				message: "Due date cannot be in the past",
 			},
-		],
+		},
+		activityLog: {
+			type: [
+				{
+					action: {
+						type: String,
+						enum: [
+							"project_created",
+							"task_added",
+							"status_updated",
+							"member_added",
+							"member_removed",
+						],
+						required: true,
+					},
+					userId: {
+						type: Schema.Types.ObjectId,
+						ref: "User",
+					},
+					timestamp: {
+						type: Date,
+						default: Date.now,
+					},
+				},
+			],
+			default: [],
+		},
 	},
 	{
 		timestamps: true,
