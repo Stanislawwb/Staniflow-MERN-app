@@ -10,6 +10,7 @@ const projectSchema = new Schema(
 		description: {
 			type: String,
 			trim: true,
+			default: "",
 		},
 		status: {
 			type: String,
@@ -26,7 +27,7 @@ const projectSchema = new Schema(
 				},
 				role: {
 					type: String,
-					enum: ["admin", "editor", "viewer"],
+					enum: ["admin", "developer", "guest"],
 					default: "viewer",
 				},
 			},
@@ -57,6 +58,7 @@ const projectSchema = new Schema(
 						type: String,
 						enum: [
 							"project_created",
+							"project_updated",
 							"task_added",
 							"status_updated",
 							"member_added",
