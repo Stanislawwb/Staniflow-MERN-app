@@ -72,7 +72,7 @@ export const getProjects: RequestHandler = async (req, res, next) => {
 				{ createdBy: req.user._id },
 				{ "members.userId": req.user._id },
 			],
-		}).select("title status tags dueDate");
+		}).select("title status tags dueDate members");
 
 		res.status(200).json(projects);
 	} catch (error) {
@@ -180,10 +180,10 @@ export const updateProject: RequestHandler<
 			project.dueDate = new Date(dueDate);
 		}
 
-		project.title = title ?? project.title;
-		project.description = description ?? project.description;
-		project.status = status ?? project.status;
-		project.tags = tags ?? project.tags;
+		if (title) project.title = title;
+		if (description) project.description = description;
+		if (status) project.status = status;
+		if (tags) project.tags = tags;
 
 		project.activityLog.push({
 			action: "project_updated",

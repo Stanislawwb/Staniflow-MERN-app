@@ -1,5 +1,6 @@
 import express from "express";
 import * as ProjectController from "../controllers/projectController";
+import * as TaskController from "../controllers/taskController";
 import protect from "../middleware/authMiddleware";
 
 const router = express.Router();
@@ -19,5 +20,25 @@ router
 	.route("/:id/members")
 	.patch(protect, ProjectController.addMemberToProject)
 	.delete(protect, ProjectController.removeMemberFromProject);
+
+// Tasks Routes
+router
+	.route("/:projectId/tasks")
+	.post(protect, TaskController.createTask)
+	.get(protect, TaskController.getTasks);
+
+router
+	.route("/tasks/:taskId")
+	.get(protect, TaskController.getTask)
+	.patch(protect, TaskController.updateTask)
+	.delete(protect, TaskController.deleteTask);
+
+router
+	.route("/tasks/:taskId/assign")
+	.patch(protect, TaskController.assignUsersToTask);
+
+router
+	.route("/tasks/:taskId/status")
+	.patch(protect, TaskController.updateTaskStatus);
 
 export default router;

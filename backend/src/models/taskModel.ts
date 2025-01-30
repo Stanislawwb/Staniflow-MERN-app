@@ -15,7 +15,6 @@ const taskSchema = new Schema(
 			type: String,
 			enum: ["To Do", "In Progress", "Done"],
 			default: "To Do",
-			required: true,
 			index: true,
 		},
 		projectId: {
@@ -44,6 +43,32 @@ const taskSchema = new Schema(
 			type: String,
 			enum: ["Low", "Medium", "High"],
 			default: "Medium",
+		},
+		activityLog: {
+			type: [
+				{
+					action: {
+						type: String,
+						enum: [
+							"task_created",
+							"task_updated",
+							"status_updated",
+							"assigned_to_task",
+							"task_deleted",
+						],
+						required: true,
+					},
+					userId: {
+						type: Schema.Types.ObjectId,
+						ref: "User",
+					},
+					timestamp: {
+						type: Date,
+						default: Date.now,
+					},
+				},
+			],
+			default: [],
 		},
 	},
 	{
