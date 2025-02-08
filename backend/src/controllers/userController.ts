@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel, { UserDocument } from "../models/userModel";
-import jwt from "jsonwebtoken";
+import { generateRefreshToken, generateToken } from "../util/tokenUtils";
 
 type createUserBody = {
 	username: string;
@@ -22,9 +22,7 @@ export const createUser: RequestHandler<
 			throw createHttpError(400, "Parameters missing");
 		}
 
-		const existingUsername = await UserModel.findOne({
-			username: username,
-		});
+		const existingUsername = await UserModel.findOne({ username });
 
 		if (existingUsername) {
 			throw createHttpError(409, "Username already taken.");
@@ -39,16 +37,28 @@ export const createUser: RequestHandler<
 		}
 
 		const newUser: UserDocument = await UserModel.create({
-			username: username,
-			email: email,
-			password: password,
+			username,
+			email,
+			password,
+		});
+
+		const accessToken = generateToken(newUser._id.toString());
+		const refreshToken = generateRefreshToken(newUser._id.toString());
+
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "strict",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
 		res.status(201).json({
-			_id: newUser.id,
-			username: newUser.username,
-			email: newUser.email,
-			token: generateToken(newUser._id.toString()),
+			user: {
+				_id: newUser.id,
+				username: newUser.username,
+				email: newUser.email,
+			},
+			accessToken,
 		});
 	} catch (error) {
 		next(error);
@@ -87,11 +97,23 @@ export const login: RequestHandler<
 			throw createHttpError(401, "Invalid credentials");
 		}
 
+		const accessToken = generateToken(user._id.toString());
+		const refreshToken = generateRefreshToken(user._id.toString());
+
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "strict",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
 		res.json({
-			_id: user.id,
-			name: user.username,
-			email: user.email,
-			token: generateToken(user._id.toString()),
+			user: {
+				_id: user.id,
+				username: user.username,
+				email: user.email,
+			},
+			accessToken,
 		});
 	} catch (error) {
 		next(error);
@@ -100,6 +122,7 @@ export const login: RequestHandler<
 
 export const logout: RequestHandler = async (req, res, next) => {
 	try {
+		res.clearCookie("refreshToken");
 		res.status(200).json({ message: "Successfully logged out" });
 	} catch (error) {
 		next(error);
@@ -126,13 +149,4 @@ export const getMe: RequestHandler = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
-};
-
-const generateToken = (id: string) => {
-	if (!process.env.JWT_SECRET) {
-		throw new Error("JWT_SECRET is not defined");
-	}
-	return jwt.sign({ id }, process.env.JWT_SECRET, {
-		expiresIn: "5h",
-	});
 };

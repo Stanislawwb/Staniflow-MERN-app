@@ -15,7 +15,6 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 			token = req.headers.authorization.split(" ")[1];
 
 			if (!token) {
-				res.status(401);
 				throw createHttpError(401, "Not authorized, no token");
 			}
 
@@ -24,34 +23,21 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 				return next(createHttpError(500, "JWT_SECRET is not defined"));
 			}
 
-			let decoded;
-
 			try {
-				decoded = jwt.verify(token, process.env.JWT_SECRET);
-			} catch (error: unknown) {
-				if (error instanceof Error) {
-					if (error.name === "TokenExpiredError") {
-						return next(createHttpError(401, "Token Expired"));
-					}
+				const decoded = jwt.verify(token, process.env.JWT_SECRET!);
 
-					return next(createHttpError(401, "Invalid token"));
+				req.user = await UserModel.findById(
+					(decoded as { id: string }).id
+				).select("-password");
+
+				if (!req.user) {
+					return next(createHttpError(401, "User not found"));
 				}
+				return next();
+			} catch (error) {
+				console.error(error);
+				return next(createHttpError(401, "Invalid or expired token"));
 			}
-
-			const decodedPayload = decoded as { id: string };
-
-			const user = await UserModel.findById(decodedPayload.id).select(
-				"-password"
-			);
-
-			if (!user) {
-				return next(
-					createHttpError(401, "Not authorized, user not found")
-				);
-			}
-
-			req.user = user;
-			return next();
 		}
 
 		return next(createHttpError(401, "Not authorized, no token provided"));
