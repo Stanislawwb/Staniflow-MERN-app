@@ -141,10 +141,6 @@ export const getAllUsers: RequestHandler = async (req, res, next) => {
 
 export const getMe: RequestHandler = async (req, res, next) => {
 	try {
-		if (!req.user) {
-			throw createHttpError(401, "User not authenticated");
-		}
-
 		res.status(200).json(req.user);
 	} catch (error) {
 		next(error);

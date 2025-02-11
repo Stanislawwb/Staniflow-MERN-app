@@ -3,6 +3,13 @@ import createHttpError from "http-errors";
 import Project from "../models/projectModel";
 import User from "../models/userModel";
 import mongoose from "mongoose";
+import { sendWebSocketMessage } from "../service/websocketService";
+
+const findProjectById = async (projectId: string) => {
+	const project = await Project.findById(projectId);
+	if (!project) throw createHttpError(404, "Project not found");
+	return project;
+};
 
 type CreateProjectBody = {
 	title: string;
@@ -55,6 +62,7 @@ export const createProject: RequestHandler<
 			],
 		});
 
+		sendWebSocketMessage("PROJECT_CREATED", { project: newProject });
 		res.status(201).json(newProject);
 	} catch (error) {
 		next(error);
@@ -63,10 +71,6 @@ export const createProject: RequestHandler<
 
 export const getProjects: RequestHandler = async (req, res, next) => {
 	try {
-		if (!req.user) {
-			throw createHttpError(401, "Not authorized");
-		}
-
 		const projects = await Project.find({
 			$or: [
 				{ createdBy: req.user._id },
@@ -83,10 +87,6 @@ export const getProjects: RequestHandler = async (req, res, next) => {
 export const getProject: RequestHandler = async (req, res, next) => {
 	try {
 		const projectId = req.params.id;
-
-		if (!req.user) {
-			throw createHttpError(401, "Not authorized");
-		}
 
 		if (!projectId) {
 			throw createHttpError(400, "Project ID is required");
@@ -159,11 +159,7 @@ export const updateProject: RequestHandler<
 			throw createHttpError(400, "Project ID is required");
 		}
 
-		const project = await Project.findById(projectId);
-
-		if (!project) {
-			throw createHttpError(404, "Project not found");
-		}
+		const project = await findProjectById(projectId);
 
 		const userHasAccess =
 			project.createdBy.equals(updatedBy) ||
@@ -193,6 +189,8 @@ export const updateProject: RequestHandler<
 
 		const updatedProject = await project.save();
 
+		sendWebSocketMessage("PROJECT_UPDATED", { project: updatedProject });
+
 		res.status(200).json(updatedProject);
 	} catch (error) {
 		next(error);
@@ -203,19 +201,11 @@ export const deleteProject: RequestHandler = async (req, res, next) => {
 	try {
 		const projectId = req.params.id;
 
-		if (!req.user) {
-			throw createHttpError(401, "Not authorized");
-		}
-
 		if (!projectId) {
 			throw createHttpError(400, "No project found");
 		}
 
-		const project = await Project.findById(projectId);
-
-		if (!project) {
-			throw createHttpError(404, "Project not found");
-		}
+		const project = await findProjectById(projectId);
 
 		const userHasAccess = project?.createdBy._id.equals(req.user._id);
 
@@ -224,6 +214,8 @@ export const deleteProject: RequestHandler = async (req, res, next) => {
 		}
 
 		await project?.deleteOne();
+
+		sendWebSocketMessage("PROJECT_DELETED", { projectId });
 
 		res.status(200).json({ message: "Project deleted successfully" });
 	} catch (error) {
@@ -254,15 +246,7 @@ export const addMemberToProject: RequestHandler<
 			throw createHttpError(400, "Invalid User ID");
 		}
 
-		if (!req.user) {
-			throw createHttpError(401, "Not authorized");
-		}
-
-		const project = await Project.findById(projectId);
-
-		if (!project) {
-			throw createHttpError(404, "Project not found");
-		}
+		const project = await findProjectById(projectId);
 
 		const userHasAccess =
 			project.createdBy.equals(req.user.id) ||
@@ -309,6 +293,8 @@ export const addMemberToProject: RequestHandler<
 
 		await project.save();
 
+		sendWebSocketMessage("PROJECT_MEMBER_ADDED", { project });
+
 		res.status(200).json(project);
 	} catch (error) {
 		next(error);
@@ -338,15 +324,7 @@ export const removeMemberFromProject: RequestHandler<
 			throw createHttpError(400, "Invalid User ID");
 		}
 
-		if (!req.user) {
-			throw createHttpError(401, "Not authorized");
-		}
-
-		const project = await Project.findById(projectId);
-
-		if (!project) {
-			throw createHttpError(404, "Project not found");
-		}
+		const project = await findProjectById(projectId);
 
 		const userHasAccess =
 			project.createdBy.equals(req.user.id) ||
@@ -379,6 +357,8 @@ export const removeMemberFromProject: RequestHandler<
 		});
 
 		await project.save();
+
+		sendWebSocketMessage("PROJECT_MEMBER_REMOVED", { project });
 
 		res.status(200).json(project);
 	} catch (error) {

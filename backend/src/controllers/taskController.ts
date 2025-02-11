@@ -3,6 +3,13 @@ import createHttpError from "http-errors";
 import Task from "../models/taskModel";
 import { isUserPartOfProject } from "../../utils/isUserPartOfProject";
 import mongoose from "mongoose";
+import { sendWebSocketMessage } from "../service/websocketService";
+
+const findTaskById = async (taskId: string) => {
+	const task = await Task.findById(taskId);
+	if (!task) throw createHttpError(404, "Task not found");
+	return task;
+};
 
 type CreateTaskBody = {
 	title: string;
@@ -69,6 +76,7 @@ export const createTask: RequestHandler<
 
 		const newTask = await Task.create(taskData);
 
+		sendWebSocketMessage("TASK_CREATED", { task: newTask });
 		res.status(201).json(newTask);
 	} catch (error) {
 		next(error);
@@ -102,16 +110,9 @@ export const getTasks: RequestHandler = async (req, res, next) => {
 export const getTask: RequestHandler = async (req, res, next) => {
 	try {
 		const { taskId } = req.params;
+		const task = await findTaskById(taskId);
 
-		const task = await Task.findById(taskId);
-
-		if (!task) {
-			throw createHttpError(404, "Task not found");
-		}
-
-		const projectId = task.projectId.toString();
-
-		await isUserPartOfProject(req.user.id, projectId);
+		await isUserPartOfProject(req.user.id, task.projectId.toString());
 
 		res.status(200).json(task);
 	} catch (error) {
@@ -121,16 +122,8 @@ export const getTask: RequestHandler = async (req, res, next) => {
 
 export const updateTask: RequestHandler = async (req, res, next) => {
 	try {
-		const { title, description, dueDate, priority } = req.body;
-
+		const { title, description, dueDate, priority, status } = req.body;
 		const { taskId } = req.params;
-
-		const task = await Task.findById(taskId);
-
-		if (!task) {
-			throw createHttpError(404, "Task not found");
-		}
-
 		const updatedBy = req?.user?.id;
 
 		if (!updatedBy) {
@@ -140,12 +133,15 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 			);
 		}
 
+		const task = await findTaskById(taskId);
+
 		await isUserPartOfProject(updatedBy, task.projectId.toString());
 
 		if (title) task.title = title;
 		if (description) task.description = description;
 		if (dueDate) task.dueDate = new Date(dueDate);
 		if (priority) task.priority = priority;
+		if (status && task.status !== status) task.status = status;
 
 		task.activityLog.push({
 			action: "task_updated",
@@ -155,6 +151,7 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 
 		const updatedTask = await task.save();
 
+		sendWebSocketMessage("TASK_UPDATED", { task: updatedTask });
 		res.status(200).json(updatedTask);
 	} catch (error) {
 		next(error);
@@ -164,19 +161,17 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 export const deleteTask: RequestHandler = async (req, res, next) => {
 	try {
 		const { taskId } = req.params;
+		const userId = req?.user?.id;
 
-		const task = await Task.findById(taskId);
+		if (!userId) throw createHttpError(403, "Authentication required");
 
-		if (!task) {
-			throw createHttpError(404, "Task not found");
-		}
+		const task = await findTaskById(taskId);
 
-		const projectId = task.projectId.toString();
-
-		await isUserPartOfProject(req?.user?.id, projectId);
+		await isUserPartOfProject(userId, task.projectId.toString());
 
 		await task?.deleteOne();
 
+		sendWebSocketMessage("TASK_DELETED", { taskId });
 		res.status(200).json({ message: "Task deleted successfully" });
 	} catch (error) {
 		next(error);
@@ -186,20 +181,12 @@ export const deleteTask: RequestHandler = async (req, res, next) => {
 export const assignUsersToTask: RequestHandler = async (req, res, next) => {
 	try {
 		const { taskId } = req.params;
-
-		const task = await Task.findById(taskId);
-
-		if (!task) {
-			throw createHttpError(404, "Task not found");
-		}
-
+		const { userIds } = req.body;
 		const updatedBy = req?.user?.id;
 
 		if (!updatedBy) {
 			throw createHttpError(401, "Not authorized");
 		}
-
-		const { userIds } = req.body;
 
 		if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
 			throw createHttpError(400, "User IDs are required");
@@ -209,6 +196,7 @@ export const assignUsersToTask: RequestHandler = async (req, res, next) => {
 			throw createHttpError(400, "Invalid User ID(s) provided");
 		}
 
+		const task = await findTaskById(taskId);
 		const projectId = task.projectId.toString();
 
 		const { member, project } = await isUserPartOfProject(
@@ -270,7 +258,9 @@ export const assignUsersToTask: RequestHandler = async (req, res, next) => {
 			timestamp: new Date(),
 		});
 
-		await task.save();
+		const updatedTask = await task.save();
+
+		sendWebSocketMessage("TASK_ASSIGNED", { task: updatedTask });
 
 		res.status(200).json({
 			message: "Users successfully assigned to the task",
@@ -336,6 +326,8 @@ export const updateTaskStatus: RequestHandler = async (req, res, next) => {
 		});
 
 		const updatedTask = await task.save();
+
+		sendWebSocketMessage("TASK_STATUS_UPDATED", { task: updatedTask });
 
 		res.status(200).json(updatedTask);
 	} catch (error) {
