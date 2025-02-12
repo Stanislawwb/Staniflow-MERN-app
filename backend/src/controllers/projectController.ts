@@ -93,8 +93,8 @@ export const getProject: RequestHandler = async (req, res, next) => {
 		}
 
 		const project = await Project.findById(projectId)
-			.populate("createdBy", "name avatar role")
-			.populate("activityLog.userId", "name");
+			.populate("createdBy", "username avatar role")
+			.populate("activityLog.userId", "username");
 
 		if (!project) {
 			throw createHttpError(404, "Project not found");
