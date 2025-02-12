@@ -1,4 +1,4 @@
-export interface IUser {
+export interface User {
 	_id: string;
 	username: string;
 	email: string;
@@ -7,18 +7,18 @@ export interface IUser {
 	role: "admin" | "member";
 }
 
-export interface IUserRegisterRequest {
+export interface UserRegisterRequest {
 	username: string;
 	email: string;
 	password: string;
 }
 
-export interface IUserLoginRequest {
+export interface UserLoginRequest {
 	email: string;
 	password: string;
 }
 
-export interface IUserResponse {
+export interface UserResponse {
 	user: {
 		_id: string;
 		username: string;
@@ -27,7 +27,7 @@ export interface IUserResponse {
 	accessToken: string;
 }
 
-export interface IUsersResponse {
+export interface UsersResponse {
 	_id: string;
 	username: string;
 	email: string;

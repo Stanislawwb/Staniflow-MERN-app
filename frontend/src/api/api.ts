@@ -38,6 +38,12 @@ const baseQueryWithReauth: BaseQueryFn<
 			extraOptions
 		);
 
+		if (refreshResult.error) {
+			console.error("Refresh token failed:", refreshResult.error);
+			api.dispatch(logout());
+			return refreshResult;
+		}
+
 		if (
 			refreshResult.data &&
 			typeof refreshResult.data === "object" &&
@@ -59,7 +65,9 @@ const baseQueryWithReauth: BaseQueryFn<
 };
 
 export const api = createApi({
+	reducerPath: "api",
 	baseQuery: baseQueryWithReauth,
+	tagTypes: ["Users", "UserMe", "Projects", "Tasks"],
 	endpoints: () => ({}),
 });
 

@@ -1,21 +1,22 @@
 import api from "./api";
 import {
-	IUser,
-	IUserRegisterRequest,
-	IUserLoginRequest,
-	IUserResponse,
-	IUsersResponse,
+	User,
+	UserRegisterRequest,
+	UserLoginRequest,
+	UserResponse,
+	UsersResponse,
 } from "../types/userTypes";
 import { setAccessToken } from "../store/authSlice";
 
 export const userApi = api.injectEndpoints({
 	endpoints: (builder) => ({
-		registerUser: builder.mutation<IUserResponse, IUserRegisterRequest>({
+		registerUser: builder.mutation<UserResponse, UserRegisterRequest>({
 			query: (userData) => ({
 				url: "/users/register",
 				method: "POST",
 				body: userData,
 			}),
+			invalidatesTags: ["Users"],
 			async onQueryStarted(_, { dispatch, queryFulfilled }) {
 				try {
 					const { data } = await queryFulfilled;
@@ -25,12 +26,13 @@ export const userApi = api.injectEndpoints({
 				}
 			},
 		}),
-		loginUser: builder.mutation<IUserResponse, IUserLoginRequest>({
+		loginUser: builder.mutation<UserResponse, UserLoginRequest>({
 			query: (credentials) => ({
 				url: "/users/login",
 				method: "POST",
 				body: credentials,
 			}),
+			invalidatesTags: ["Users"],
 			async onQueryStarted(_, { dispatch, queryFulfilled }) {
 				try {
 					const { data } = await queryFulfilled;
@@ -52,16 +54,19 @@ export const userApi = api.injectEndpoints({
 				url: "/users/logout",
 				method: "POST",
 			}),
+			invalidatesTags: ["Users"],
 		}),
-		getUsers: builder.query<IUsersResponse[], void>({
+		getUsers: builder.query<UsersResponse[], void>({
 			query: () => ({
 				url: "/users/",
 			}),
+			providesTags: ["Users"],
 		}),
-		getMe: builder.query<IUser, void>({
+		getMe: builder.query<User, void>({
 			query: () => ({
 				url: "/users/me",
 			}),
+			providesTags: ["UserMe"],
 		}),
 	}),
 });
