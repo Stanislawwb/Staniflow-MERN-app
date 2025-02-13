@@ -80,7 +80,7 @@ export const projectApi = api.injectEndpoints({
 			query: ({ id, userId }) => ({
 				url: `/projects/${id}/members`,
 				method: "DELETE",
-				body: userId,
+				body: { userId },
 			}),
 			invalidatesTags: (_, __, { id }) => [{ type: "Projects", id }],
 		}),
@@ -91,4 +91,8 @@ export const {
 	useCreateProjectMutation,
 	useGetProjectsQuery,
 	useGetProjectQuery,
+	useUpdateProjectMutation,
+	useDeleteProjectMutation,
+	useAddMemberToProjectMutation,
+	useRemoveMemberFromProjectMutation,
 } = projectApi;
