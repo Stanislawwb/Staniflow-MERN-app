@@ -1,0 +1,11 @@
+.section-features {
+	h1 {
+		text-align: center;
+	}
+
+	p {
+		text-align: center;
+		max-width: 560px;
+		margin: 0 auto;
+	}
+}

@@ -1,0 +1,9 @@
+.navbar {
+	.navbar__auth {
+		border: 1px solid #ceceea;
+		border-radius: 14px;
+		display: flex;
+		gap: 10px;
+		padding: 4px 6px;
+	}
+}

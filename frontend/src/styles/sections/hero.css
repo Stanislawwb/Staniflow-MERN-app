@@ -1,0 +1,23 @@
+.section-hero {
+	text-align: center;
+	padding: 40px 0;
+	background-color: gainsboro;
+
+	h1 {
+		margin-bottom: 20px;
+	}
+
+	p {
+		font-size: 18px;
+		font-weight: 500;
+		max-width: 560px;
+		margin: 0 auto 30px;
+	}
+
+	span {
+		display: block;
+		font-size: 12px;
+		font-weight: 600;
+		opacity: 0.5;
+	}
+}

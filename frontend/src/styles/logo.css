@@ -1,0 +1,12 @@
+.logo {
+	display: inline-block;
+	border: 1px solid #ceceea;
+	border-radius: 14px;
+	padding: 4px 8px;
+
+	img {
+		display: block;
+		max-width: 90px;
+		height: auto;
+	}
+}

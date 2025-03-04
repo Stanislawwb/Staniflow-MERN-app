@@ -1,0 +1,13 @@
+.shell {
+	width: 100%;
+	max-width: 1140px;
+	padding: 0 15px;
+	margin-inline: auto;
+}
+
+.shell--large {
+	max-width: 1320px;
+}
+
+@media (max-width: 767px) {
+}
