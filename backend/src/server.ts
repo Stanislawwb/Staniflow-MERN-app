@@ -25,7 +25,7 @@ const startServer = async () => {
 			console.log("New WebSocket client connected!");
 
 			ws.on("close", () => {
-				console.log("🔌 WebSocket client disconnected.");
+				console.log("WebSocket client disconnected.");
 			});
 		});
 	} catch (error) {
