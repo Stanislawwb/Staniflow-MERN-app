@@ -12,7 +12,6 @@ class WebSocketService {
 		this.socket = new WebSocket(this.WS_URL);
 
 		this.socket.onopen = () => {
-			console.log("WebSocket Connected to", this.WS_URL);
 			this.startPing();
 		};
 

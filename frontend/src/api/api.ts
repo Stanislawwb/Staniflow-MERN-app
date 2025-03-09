@@ -30,6 +30,18 @@ const baseQueryWithReauth: BaseQueryFn<
 	let result = await baseQuery(args, api, extraOptions);
 
 	if (result.error && result.error.status === 401) {
+		const originalRequest = typeof args === "string" ? args : args.url;
+
+		if (
+			originalRequest === "/users/login" ||
+			originalRequest === "/users/register"
+		) {
+			console.warn(
+				"Unauthorized request from login/register. Not refreshing token."
+			);
+			return result;
+		}
+
 		console.log("Access token expired, trying to refresh...");
 
 		const refreshResult = await baseQuery(

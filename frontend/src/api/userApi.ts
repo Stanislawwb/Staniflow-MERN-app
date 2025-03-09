@@ -21,8 +21,12 @@ export const userApi = api.injectEndpoints({
 				try {
 					const { data } = await queryFulfilled;
 					dispatch(setAccessToken(data.accessToken));
-				} catch (error) {
+				} catch (error: any) {
 					console.error("Login failed:", error);
+
+					if (error?.error?.status === 400) {
+						throw new Error("This email is already in use.");
+					}
 				}
 			},
 		}),
@@ -37,7 +41,7 @@ export const userApi = api.injectEndpoints({
 				try {
 					const { data } = await queryFulfilled;
 					dispatch(setAccessToken(data.accessToken));
-				} catch (error) {
+				} catch (error: any) {
 					console.error("Login failed:", error);
 				}
 			},
