@@ -14,7 +14,7 @@ setWSServer(wss);
 
 const startServer = async () => {
 	try {
-		await mongoose.connect(env.MONGO_CONNECTION_STRING);
+		await mongoose.connect(env.MONGO_URI);
 		console.log("Mongoose connected");
 
 		server.listen(port, () => {
