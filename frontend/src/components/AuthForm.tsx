@@ -1,4 +1,4 @@
-import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ interface AuthFormProps {
 }
 
 interface FormData {
+	username?: string;
 	email: string;
 	password: string;
 }
@@ -49,6 +50,23 @@ const AuthForm: React.FC<AuthFormProps> = ({
 				<div className="form__error">
 					{error && <p>Invalid email or password.</p>}
 				</div>
+
+				{mode === "register" && (
+					<div className="form__row">
+						<FontAwesomeIcon icon={faUser} />
+
+						<input
+							type="text"
+							placeholder="Username"
+							{...register("username", {
+								required: "Username is required",
+							})}
+						/>
+						{errors.username && (
+							<p className="error">{errors.username.message}</p>
+						)}
+					</div>
+				)}
 
 				<div className="form__row">
 					<FontAwesomeIcon icon={faEnvelope} />
