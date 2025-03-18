@@ -22,12 +22,6 @@ export const createUser: RequestHandler<
 			throw createHttpError(400, "Parameters missing");
 		}
 
-		const existingUsername = await UserModel.findOne({ username });
-
-		if (existingUsername) {
-			throw createHttpError(409, "Username already taken.");
-		}
-
 		const existingEmail = await UserModel.findOne({
 			email: email,
 		});

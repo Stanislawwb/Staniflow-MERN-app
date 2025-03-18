@@ -2,10 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "../api/userApi";
 import AuthLayout from "../components/layouts/AuthLayout";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store/store";
+import { login } from "../store/authSlice";
+
 const Login = () => {
 	const [loginUser] = useLoginUserMutation();
 	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const handleLogin = async (formData: {
 		email: string;
@@ -13,7 +18,9 @@ const Login = () => {
 	}) => {
 		try {
 			setError(null);
-			await loginUser(formData).unwrap();
+			const response = await loginUser(formData).unwrap();
+
+			dispatch(login(response.accessToken));
 
 			navigate("/dashboard");
 		} catch (error: any) {

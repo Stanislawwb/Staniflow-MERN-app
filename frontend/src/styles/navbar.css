@@ -1,4 +1,8 @@
 .navbar {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+
 	.navbar__auth {
 		border: 1px solid #ceceea;
 		border-radius: 14px;

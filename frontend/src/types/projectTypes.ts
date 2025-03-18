@@ -1,7 +1,8 @@
+export type Role = "admin" | "developer" | "guest";
+
 export interface ProjectMember {
-	userId: string;
-	role?: "admin" | "editor" | "viewer";
-	_id: string;
+	userId: { _id: string; username: string };
+	role?: Role;
 }
 
 export interface CreateProjectRequest {
@@ -30,7 +31,7 @@ export interface Project {
 	title: string;
 	status?: "active" | "completed" | "archived";
 	tags?: string[];
-	dueDate?: string;
+	dueDate: string;
 	members?: ProjectMember[];
 }
 
@@ -38,6 +39,7 @@ export interface DetailedProject extends Project {
 	description?: string;
 	createdBy: {
 		_id: string;
+		username: string;
 		avatar: string;
 		role: string;
 	};

@@ -1,6 +1,6 @@
-import AuthForm from "../AuthForm";
 import ParallaxTilt from "react-parallax-tilt";
 import authImg from "../../assets/auth-img.png";
+import AuthForm from "../AuthForm";
 
 interface AuthLayoutProps {
 	mode: "login" | "register";

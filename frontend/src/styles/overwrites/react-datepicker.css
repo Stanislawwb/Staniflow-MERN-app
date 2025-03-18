@@ -1,0 +1,16 @@
+@media (max-width: 767px) {
+	.react-datepicker__day-name {
+		width: 1.3rem !important;
+		line-height: 1.3rem !important;
+	}
+
+	.react-datepicker__day {
+		width: 1.3rem !important;
+		line-height: 1.3rem !important;
+	}
+
+	.react-datepicker__time-container,
+	.react-datepicker__time-box {
+		width: 75px !important;
+	}
+}

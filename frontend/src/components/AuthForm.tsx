@@ -1,8 +1,8 @@
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 interface AuthFormProps {
 	mode: "login" | "register";
@@ -47,9 +47,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 			<h1>{mode === "login" ? "Member Login" : "Register"}</h1>
 
 			<div className="form__rows">
-				<div className="form__error">
-					{error && <p>Invalid email or password.</p>}
-				</div>
+				<div className="form__error">{error && <p>{error}</p>}</div>
 
 				{mode === "register" && (
 					<div className="form__row">
@@ -110,7 +108,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 				</div>
 			</div>
 
-			<button type="submit">
+			<button type="submit" className="btn--green">
 				{mode === "login" ? "Login" : "Register"}
 			</button>
 

@@ -1,0 +1,40 @@
+.react-select-container {
+	font-size: 13px;
+
+	.react-select__value-container {
+		max-height: 30px !important;
+		padding: 0 8px;
+		margin-top: 0;
+	}
+
+	.react-select__control {
+		border: 1px solid #e8e8e8 !important;
+		box-shadow: none !important;
+		max-height: 30px !important;
+		min-height: 30px !important;
+
+		&:focus {
+			border: none !important;
+		}
+
+		&:focus-within {
+			border-color: #553ed0 !important;
+			outline: none !important;
+			box-shadow: 0 0 0 5px rgba(182, 182, 255, 0.16) !important;
+		}
+	}
+
+	.react-select__input-container {
+		padding: 0;
+		margin: 0;
+	}
+
+	.react-select__input {
+		box-shadow: none !important;
+	}
+
+	.react-select__indicators {
+		max-height: 30px !important;
+		min-height: 30px !important;
+	}
+}

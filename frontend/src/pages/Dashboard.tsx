@@ -1,5 +1,11 @@
+import Projects from "../components/Projects";
+
 const Dashboard = () => {
-	return <div>This is supposed to be the Dashboard</div>;
+	return (
+		<div className="dashboard">
+			<Projects />
+		</div>
+	);
 };
 
 export default Dashboard;

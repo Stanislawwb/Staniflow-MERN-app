@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store/store";
-import { logout, setAccessToken } from "../store/authSlice";
+import { logout, setAccessToken, setLoading } from "../store/authSlice";
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
@@ -42,7 +42,7 @@ const baseQueryWithReauth: BaseQueryFn<
 			return result;
 		}
 
-		console.log("Access token expired, trying to refresh...");
+		api.dispatch(setLoading(true));
 
 		const refreshResult = await baseQuery(
 			"/users/refresh-token",
@@ -53,6 +53,8 @@ const baseQueryWithReauth: BaseQueryFn<
 		if (refreshResult.error) {
 			console.error("Refresh token failed:", refreshResult.error);
 			api.dispatch(logout());
+			api.dispatch(setAccessToken(null));
+			api.dispatch(setLoading(false));
 			return refreshResult;
 		}
 
@@ -71,6 +73,8 @@ const baseQueryWithReauth: BaseQueryFn<
 		} else {
 			api.dispatch(logout());
 		}
+
+		api.dispatch(setLoading(false));
 	}
 
 	return result;

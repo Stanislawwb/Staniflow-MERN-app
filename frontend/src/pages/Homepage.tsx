@@ -3,7 +3,7 @@ import Hero from "../components/sections/Hero";
 
 const Homepage = () => {
 	return (
-		<div className="main homepage">
+		<div className="homepage">
 			<Hero />
 
 			<Features />

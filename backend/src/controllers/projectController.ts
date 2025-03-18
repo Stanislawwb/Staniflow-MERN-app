@@ -30,7 +30,7 @@ export const createProject: RequestHandler<
 	unknown
 > = async (req, res, next) => {
 	try {
-		const { title, description, status, members, tags, dueDate } = req.body;
+		const { title, description, members, tags, dueDate } = req.body;
 
 		const createdBy = req?.user.id;
 
@@ -48,7 +48,7 @@ export const createProject: RequestHandler<
 		const newProject = await Project.create({
 			title,
 			description,
-			status,
+			status: "active",
 			members,
 			tags,
 			dueDate,
@@ -76,7 +76,9 @@ export const getProjects: RequestHandler = async (req, res, next) => {
 				{ createdBy: req.user._id },
 				{ "members.userId": req.user._id },
 			],
-		}).select("title status tags dueDate members");
+		})
+			.populate("createdBy", "username")
+			.populate("members.userId", "username");
 
 		res.status(200).json(projects);
 	} catch (error) {

@@ -2,7 +2,6 @@ import {
 	CreateProjectRequest,
 	CreateProjectResponse,
 	DetailedProject,
-	Project,
 	ProjectMember,
 } from "../types/projectTypes";
 import api from "./api";
@@ -20,7 +19,7 @@ export const projectApi = api.injectEndpoints({
 			}),
 			invalidatesTags: [{ type: "Projects", id: "LIST" }],
 		}),
-		getProjects: builder.query<Project[], void>({
+		getProjects: builder.query<DetailedProject[], void>({
 			query: () => ({
 				url: "/projects/",
 			}),
@@ -28,6 +27,7 @@ export const projectApi = api.injectEndpoints({
 				result
 					? [
 							{ type: "Projects", id: "LIST" },
+							{ type: "UserMe" },
 							...result.map(({ _id }) => ({
 								type: "Projects" as const,
 								id: _id,

@@ -1,0 +1,43 @@
+.section-projects {
+	background-color: #cecece;
+	padding: 20px 0;
+
+	.section__inner {
+		position: relative;
+	}
+
+	.section__modal {
+		position: fixed;
+		inset: 0;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		opacity: 0;
+		pointer-events: none;
+		width: 100%;
+		z-index: 10;
+		background: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(2px);
+		transition: opacity 0.3s, background 0.3s, backdrop-filter 0.3s,
+			visibility 0.3s;
+		visibility: hidden;
+	}
+
+	.section__modal.active {
+		opacity: 1;
+		pointer-events: initial;
+		visibility: visible;
+	}
+
+	.section__header {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.section__header button {
+		background-color: blanchedalmond;
+		cursor: pointer;
+		border: none;
+	}
+}

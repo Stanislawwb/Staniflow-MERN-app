@@ -9,11 +9,19 @@
 @import "./styles/socials.css";
 @import "./styles/not-found.css";
 @import "./styles/form-auth.css";
+@import "./styles/form-project.css";
 @import "./styles/helpers.css";
+@import "./styles/projects.css";
+@import "./styles/project.css";
+
+/* Override styles for third-party libraries */
+@import "./styles/overwrites/react-select.css";
+@import "./styles/overwrites/react-datepicker.css";
 
 /* Sections */
 @import "./styles/sections/hero.css";
 @import "./styles/sections/features.css";
+@import "./styles/sections/projects.css";
 
 /* Pages */
 @import "./styles/pages/auth-page.css";

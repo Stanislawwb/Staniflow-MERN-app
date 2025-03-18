@@ -7,6 +7,7 @@
 	transition: background-color 0.3s;
 	font-size: 18px;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .btn:not(.btn--solid):hover {
@@ -61,4 +62,24 @@
 .btn--large {
 	padding-block: 14px;
 	min-width: 300px;
+}
+
+.btn--green {
+	width: 100%;
+	padding: 17px 20px;
+	word-wrap: break-word;
+	border-radius: 25px;
+	border: none;
+	background-color: #57b846;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 600;
+	font-size: 14px;
+	cursor: pointer;
+	transition: background-color 0.3s, color 0.3s;
+
+	&:hover {
+		background-color: #000;
+		color: #fff;
+	}
 }

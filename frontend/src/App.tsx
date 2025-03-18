@@ -6,19 +6,24 @@ import {
 } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
-import PrivateRoute from "./components/PrivateRoute";
 import Dashboard from "./pages/Dashboard";
 import Header from "./components/Header";
 import Register from "./pages/Register";
 import Footer from "./components/Footer";
 import NotFoundPage from "./pages/NotFoundPage";
+import SingleProjectPage from "./pages/SingleProjectPage";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/store";
+import PrivateRoute from "./components/routes/PrivateRoute";
+import PublicRoute from "./components/routes/PublicRoute";
+import AuthProvider from "./components/AuthProvider";
 
 function Layout() {
 	const location = useLocation();
 
 	const noHeaderFooterRoutes = ["/login", "/register", "*"];
 
-	const isNotFound = !["/", "/login", "/register", "dashboard"].includes(
+	const isNotFound = !["/", "/login", "/register", "/dashboard"].includes(
 		location.pathname
 	);
 
@@ -30,14 +35,20 @@ function Layout() {
 			{!hideHeaderFooter && <Header />}
 
 			<Routes>
-				<Route path="/" element={<Homepage />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/register" element={<Register />} />
+				<Route element={<PublicRoute />}>
+					<Route path="/login" element={<Login />} />
+					<Route path="/register" element={<Register />} />
+				</Route>
 
 				<Route element={<PrivateRoute />}>
 					<Route path="/dashboard" element={<Dashboard />} />
+					<Route
+						path="/projects/:projectId"
+						element={<SingleProjectPage />}
+					/>
 				</Route>
 
+				<Route path="/" element={<Homepage />} />
 				<Route path="*" element={<NotFoundPage />} />
 			</Routes>
 
@@ -47,9 +58,16 @@ function Layout() {
 }
 
 function App() {
+	const isLoading = useSelector((state: RootState) => state.auth.isLoading);
+
+	if (isLoading) {
+		return null;
+	}
 	return (
 		<Router>
-			<Layout />
+			<AuthProvider>
+				<Layout />
+			</AuthProvider>
 		</Router>
 	);
 }
