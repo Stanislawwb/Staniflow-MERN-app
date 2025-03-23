@@ -24,7 +24,7 @@ export const isUserPartOfProject = async (
 	}
 
 	const member = project.members.find(
-		(member) => member.userId.toString() === userId.toString()
+		(member) => member.user.toString() === userId.toString()
 	);
 
 	if (!member && project.createdBy.toString() !== userId.toString()) {
@@ -33,7 +33,7 @@ export const isUserPartOfProject = async (
 
 	const formattedMember = member
 		? {
-				userId: member.userId.toString(),
+				userId: member.user.toString(),
 				role: member.role,
 		  }
 		: undefined;

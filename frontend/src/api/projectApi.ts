@@ -64,7 +64,7 @@ export const projectApi = api.injectEndpoints({
 		}),
 		addMemberToProject: builder.mutation<
 			DetailedProject,
-			{ id: string; member: Omit<ProjectMember, "_id"> }
+			{ id: string; member: Omit<ProjectMember, "user._id"> }
 		>({
 			query: ({ id, member }) => ({
 				url: `/projects/${id}/members`,
@@ -75,12 +75,12 @@ export const projectApi = api.injectEndpoints({
 		}),
 		removeMemberFromProject: builder.mutation<
 			DetailedProject,
-			{ id: string; userId: string }
+			{ id: string; user: string }
 		>({
-			query: ({ id, userId }) => ({
+			query: ({ id, user }) => ({
 				url: `/projects/${id}/members`,
 				method: "DELETE",
-				body: { userId },
+				body: { user },
 			}),
 			invalidatesTags: (_, __, { id }) => [{ type: "Projects", id }],
 		}),

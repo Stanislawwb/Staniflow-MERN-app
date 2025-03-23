@@ -2,8 +2,11 @@ import { forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import Select, { MultiValue } from "react-select";
 import { useGetUsersQuery } from "../api/userApi";
+import { closeProjectCreateModal } from "../store/projectCreateModalSlice";
+import { AppDispatch } from "../store/store";
 import {
 	CreateProjectRequest,
 	ProjectMember,
@@ -16,13 +19,11 @@ interface UserOption {
 }
 
 interface ProjectFormProps {
-	setDisplayModal: React.Dispatch<React.SetStateAction<boolean>>;
 	onSubmit: (formData: CreateProjectRequest) => Promise<void>;
 	currentUserId?: string;
 }
 
 const ProjectForm: React.FC<ProjectFormProps> = ({
-	setDisplayModal,
 	onSubmit,
 	currentUserId,
 }) => {
@@ -32,6 +33,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 		formState: { errors, isValid },
 		reset,
 	} = useForm<CreateProjectRequest>({ mode: "onChange" });
+
+	const dispatch = useDispatch<AppDispatch>();
 
 	const { data: getUsers } = useGetUsersQuery();
 
@@ -46,20 +49,27 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 	const [selectedMembers, setSelectedMembers] = useState<ProjectMember[]>([]);
 
 	const handleMemberChange = (selectedOptions: MultiValue<UserOption>) => {
-		const membersWithRoles = selectedOptions.map((option) => ({
-			userId: {
-				_id: option.value,
-				username: option.label,
-			},
-			role: "developer" as Role,
-		}));
+		const membersWithRoles = selectedOptions.map((option) => {
+			const selectedUser = getUsers?.find(
+				(user) => user._id === option.value
+			);
+
+			return {
+				user: {
+					_id: option.value,
+					username: option.label,
+					avatar: selectedUser?.avatar || "default-avatar.png",
+				},
+				role: "developer" as Role,
+			};
+		});
 		setSelectedMembers(membersWithRoles);
 	};
 
 	const handleRoleChange = (userId: string, role: Role) => {
 		setSelectedMembers((prev) =>
 			prev.map((member) =>
-				member.userId._id === userId ? { ...member, role } : member
+				member.user._id === userId ? { ...member, role } : member
 			)
 		);
 	};
@@ -107,7 +117,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 		>
 			<div
 				className="form__close"
-				onClick={() => setDisplayModal(false)}
+				onClick={() => dispatch(closeProjectCreateModal())}
 			></div>
 
 			<h6>Create Project</h6>
@@ -155,8 +165,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 							className="react-select-container"
 							classNamePrefix="react-select"
 							value={selectedMembers.map((member) => ({
-								value: member.userId._id,
-								label: member.userId.username,
+								value: member.user._id,
+								label: member.user.username,
 							}))}
 						/>
 					</div>
@@ -164,14 +174,14 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
 				{selectedMembers.map((member) => (
 					<div
-						key={member.userId._id}
+						key={member.user._id}
 						className="form__row form__select"
 					>
 						<label>
 							Role for{" "}
 							{
 								userOptions.find(
-									(u) => u.value === member.userId.username
+									(u) => u.value === member.user.username
 								)?.label
 							}
 						</label>
@@ -179,7 +189,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 							value={member.role}
 							onChange={(e) =>
 								handleRoleChange(
-									member.userId._id,
+									member.user._id,
 									e.target.value as Role
 								)
 							}

@@ -1,8 +1,9 @@
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
-import Project from "../models/projectModel";
-import User from "../models/userModel";
 import mongoose from "mongoose";
+import Project from "../models/projectModel";
+import Task from "../models/taskModel";
+import User from "../models/userModel";
 import { sendWebSocketMessage } from "../service/websocketService";
 
 const findProjectById = async (projectId: string) => {
@@ -14,7 +15,7 @@ const findProjectById = async (projectId: string) => {
 type CreateProjectBody = {
 	title: string;
 	description?: string;
-	status?: "active" | "completed" | "archived";
+	status?: "In Progress" | "Completed" | "Archived";
 	members?: {
 		userId: string;
 		role?: "admin" | "editor" | "viewer";
@@ -48,7 +49,7 @@ export const createProject: RequestHandler<
 		const newProject = await Project.create({
 			title,
 			description,
-			status: "active",
+			status: "In Progress",
 			members,
 			tags,
 			dueDate,
@@ -74,13 +75,31 @@ export const getProjects: RequestHandler = async (req, res, next) => {
 		const projects = await Project.find({
 			$or: [
 				{ createdBy: req.user._id },
-				{ "members.userId": req.user._id },
+				{ "members.user": req.user._id },
 			],
 		})
 			.populate("createdBy", "username")
-			.populate("members.userId", "username");
+			.populate("members.user", "username avatar");
 
-		res.status(200).json(projects);
+		const projectsWithProgress = await Promise.all(
+			projects.map(async (project) => {
+				const tasks = await Task.find({ projectId: project._id });
+
+				const total = tasks.length;
+
+				const completedTasks = tasks.filter(
+					(task) => task.status === "Done"
+				).length;
+
+				return {
+					...project.toObject(),
+					tasksCount: total,
+					completedTasksCount: completedTasks,
+				};
+			})
+		);
+
+		res.status(200).json(projectsWithProgress);
 	} catch (error) {
 		next(error);
 	}
@@ -105,7 +124,7 @@ export const getProject: RequestHandler = async (req, res, next) => {
 		const userHasAccess =
 			project.createdBy._id.equals(req.user._id) ||
 			project.members.some((member) =>
-				member.userId._id.equals(req.user._id)
+				member.user._id.equals(req.user._id)
 			);
 
 		if (!userHasAccess) {
@@ -128,7 +147,7 @@ type UpdateProjectParams = {
 type UpdateProjectBody = {
 	title: string;
 	description?: string;
-	status?: "active" | "completed" | "archived";
+	status?: "In Progress" | "Completed" | "Archived";
 	members?: {
 		userId: string;
 		role?: "admin" | "editor" | "viewer";
@@ -165,7 +184,7 @@ export const updateProject: RequestHandler<
 
 		const userHasAccess =
 			project.createdBy.equals(updatedBy) ||
-			project.members.some((member) => member.userId.equals(updatedBy));
+			project.members.some((member) => member.user.equals(updatedBy));
 
 		if (!userHasAccess) {
 			throw createHttpError(
@@ -254,7 +273,7 @@ export const addMemberToProject: RequestHandler<
 			project.createdBy.equals(req.user.id) ||
 			project.members.some(
 				(member) =>
-					member.userId.equals(req.user.id) && member.role === "admin"
+					member.user.equals(req.user.id) && member.role === "admin"
 			);
 
 		if (!userHasAccess) {
@@ -271,7 +290,7 @@ export const addMemberToProject: RequestHandler<
 		}
 
 		const isAlreadyMember = project.members.some((member) =>
-			member.userId.equals(userId)
+			member.user.equals(userId)
 		);
 
 		if (isAlreadyMember) {
@@ -332,7 +351,7 @@ export const removeMemberFromProject: RequestHandler<
 			project.createdBy.equals(req.user.id) ||
 			project.members.some(
 				(member) =>
-					member.userId.equals(req.user.id) && member.role === "admin"
+					member.user.equals(req.user.id) && member.role === "admin"
 			);
 
 		if (!userHasAccess) {
@@ -343,7 +362,7 @@ export const removeMemberFromProject: RequestHandler<
 		}
 
 		const memberIndex = project.members.findIndex((member) =>
-			member.userId.equals(userId)
+			member.user.equals(userId)
 		);
 
 		if (memberIndex === -1) {

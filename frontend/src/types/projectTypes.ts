@@ -1,14 +1,14 @@
 export type Role = "admin" | "developer" | "guest";
 
 export interface ProjectMember {
-	userId: { _id: string; username: string };
+	user: { _id: string; username: string; avatar: string };
 	role?: Role;
 }
 
 export interface CreateProjectRequest {
 	title: string;
 	description?: string;
-	status?: "active" | "completed" | "archived";
+	status?: "In Progress" | "Completed" | "Archived";
 	members?: ProjectMember[];
 	tags?: string[];
 	dueDate?: string;
@@ -29,7 +29,7 @@ export interface CreateProjectResponse extends CreateProjectRequest {
 export interface Project {
 	_id: string;
 	title: string;
-	status?: "active" | "completed" | "archived";
+	status?: "In Progress" | "Completed" | "Archived";
 	tags?: string[];
 	dueDate: string;
 	members?: ProjectMember[];
@@ -37,6 +37,8 @@ export interface Project {
 
 export interface DetailedProject extends Project {
 	description?: string;
+	tasksCount: number;
+	completedTasksCount: number;
 	createdBy: {
 		_id: string;
 		username: string;
@@ -45,7 +47,7 @@ export interface DetailedProject extends Project {
 	};
 	activityLog: {
 		action: string;
-		userId: {
+		user: {
 			_id: string;
 		};
 		timestamp: string;

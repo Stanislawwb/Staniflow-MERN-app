@@ -218,7 +218,7 @@ export const assignUsersToTask: RequestHandler = async (req, res, next) => {
 
 		for (const userId of userIds) {
 			const userInProject = project.members.some(
-				(member) => member.userId.toString() === userId
+				(member) => member.user.toString() === userId
 			);
 
 			if (!userInProject) {

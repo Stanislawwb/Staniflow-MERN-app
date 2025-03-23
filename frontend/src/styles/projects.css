@@ -1,3 +1,135 @@
 .projects {
-	min-height: 600px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	padding-block: 10px;
+	overflow-x: auto;
+	min-height: 200px;
+
+	.project__row {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr;
+		align-items: center;
+		gap: 20px;
+		background: white;
+		padding: 10px;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+		min-width: 940px;
+	}
+
+	.project__row a {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		inset: 0;
+		z-index: 1;
+		transition: background 0.3s;
+
+		&:hover {
+			background: rgba(0, 123, 255, 0.1);
+		}
+	}
+
+	.project__row > span {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.projects__body {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.project__progress {
+		display: flex;
+		align-items: center;
+		position: relative;
+		height: 100%;
+	}
+
+	.project__progress-bar {
+		flex: 1;
+		background-color: #e0e0e0;
+		margin-top: 10px;
+		height: 10px;
+		overflow: hidden;
+		border-radius: 10px;
+		min-width: 100px;
+	}
+
+	.project__progress small {
+		position: absolute;
+		top: -2px;
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 11px;
+		font-weight: 600;
+	}
+
+	.project__progress-bar__fill {
+		height: 100%;
+		background-color: #4fa271;
+	}
+
+	.projects__members-list {
+		display: flex;
+		align-items: center;
+	}
+
+	.projects__members-list img {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.projects__members-list span {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: #7f77f1;
+		border: 1px solid #fff;
+		color: #fff;
+		height: 21px;
+		width: 21px;
+		border-radius: 50%;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.projects__members-list span + span {
+		margin-left: -3px;
+	}
+
+	.project__status {
+		text-align: center;
+		padding: 5px;
+		border-radius: 16px;
+		font-size: 14px;
+		font-weight: 600;
+		max-width: 120px;
+		z-index: 10;
+		pointer-events: none;
+	}
+
+	.project__status--green {
+		background-color: #d7ecde;
+		color: #4fa271;
+	}
+
+	.project__status--purple {
+		background-color: #e5ddfd;
+		color: #624db1;
+	}
+
+	.project__status--red {
+		background-color: #ffd4dc;
+		color: #d26c81;
+	}
 }

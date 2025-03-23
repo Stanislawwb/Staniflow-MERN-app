@@ -13,6 +13,7 @@
 @import "./styles/helpers.css";
 @import "./styles/projects.css";
 @import "./styles/project.css";
+@import "./styles/modal-project.css";
 
 /* Override styles for third-party libraries */
 @import "./styles/overwrites/react-select.css";
@@ -21,10 +22,10 @@
 /* Sections */
 @import "./styles/sections/hero.css";
 @import "./styles/sections/features.css";
-@import "./styles/sections/projects.css";
 
 /* Pages */
 @import "./styles/pages/auth-page.css";
+@import "./styles/dashboard.css";
 
 * {
 	margin: 0;

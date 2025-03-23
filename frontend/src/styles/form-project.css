@@ -122,23 +122,3 @@
 		width: calc(100% - 30px);
 	}
 }
-
-table {
-	td + td {
-		display: inline-block;
-		margin-left: 15px;
-		padding-left: 15px;
-		border-left: 1px solid #000;
-	}
-	tbody a {
-		display: inline-block;
-	}
-
-	tbody a + a {
-		margin-top: 10px;
-	}
-
-	th {
-		background-color: greenyellow;
-	}
-}

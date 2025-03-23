@@ -51,6 +51,7 @@ export const createUser: RequestHandler<
 				_id: newUser.id,
 				username: newUser.username,
 				email: newUser.email,
+				avatar: newUser.avatar,
 			},
 			accessToken,
 		});
@@ -106,6 +107,7 @@ export const login: RequestHandler<
 				_id: user.id,
 				username: user.username,
 				email: user.email,
+				avatar: user.avatar,
 			},
 			accessToken,
 		});
@@ -125,7 +127,7 @@ export const logout: RequestHandler = async (req, res, next) => {
 
 export const getAllUsers: RequestHandler = async (req, res, next) => {
 	try {
-		const users = await UserModel.find({}, "username email").lean();
+		const users = await UserModel.find({}, "username email avatar").lean();
 
 		res.json(users);
 	} catch (error) {

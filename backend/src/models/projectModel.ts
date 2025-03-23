@@ -14,13 +14,13 @@ const projectSchema = new Schema(
 		},
 		status: {
 			type: String,
-			enum: ["active", "completed", "archived"],
-			default: "active",
+			enum: ["In Progress", "Completed", "Archived"],
+			default: "In Progress",
 			index: true,
 		},
 		members: [
 			{
-				userId: {
+				user: {
 					type: Schema.Types.ObjectId,
 					ref: "User",
 					required: true,
@@ -50,6 +50,7 @@ const projectSchema = new Schema(
 				},
 				message: "Due date cannot be in the past",
 			},
+			required: true,
 		},
 		activityLog: {
 			type: [
@@ -66,7 +67,7 @@ const projectSchema = new Schema(
 						],
 						required: true,
 					},
-					userId: {
+					user: {
 						type: Schema.Types.ObjectId,
 						ref: "User",
 					},
