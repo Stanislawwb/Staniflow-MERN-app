@@ -1,11 +1,9 @@
 import { useDispatch } from "react-redux";
 import { Navigate, useParams } from "react-router-dom";
 import { useGetProjectQuery } from "../api/projectApi";
-import Modal from "../components/Modal";
-import ProjectForm from "../components/ProjectForm";
-import { openProjectCreateModal } from "../store/projectCreateModalSlice";
-import { AppDispatch } from "../store/store";
 import TaskBoard from "../components/TaskBoard";
+import { openModal } from "../store/modalSlice";
+import { AppDispatch } from "../store/store";
 
 const SingleProjectPage = () => {
 	const { projectId } = useParams();
@@ -14,15 +12,6 @@ const SingleProjectPage = () => {
 	if (!projectId) return <Navigate to="/not-found" replace />;
 
 	const { data: project } = useGetProjectQuery(projectId);
-
-	const defaultValues = {
-		title: project?.title,
-		description: project?.description,
-		members: project?.members,
-		dueDate: project?.dueDate,
-	};
-
-	const handleEditProject = async () => {};
 
 	return (
 		<div className="project-page">
@@ -39,7 +28,21 @@ const SingleProjectPage = () => {
 							<button
 								className="btn btn--green"
 								onClick={() =>
-									dispatch(openProjectCreateModal())
+									dispatch(
+										openModal({
+											type: "project-edit",
+											payload: {
+												projectId,
+												defaultValues: {
+													title: project?.title,
+													description:
+														project?.description,
+													members: project?.members,
+													dueDate: project?.dueDate,
+												},
+											},
+										})
+									)
 								}
 							>
 								Edit Project
@@ -49,15 +52,6 @@ const SingleProjectPage = () => {
 				</div>
 
 				<TaskBoard />
-
-				<Modal>
-					<ProjectForm
-						onSubmit={handleEditProject}
-						currentUserId={""}
-						defaultValues={defaultValues}
-						mode="edit"
-					/>
-				</Modal>
 			</div>
 		</div>
 	);

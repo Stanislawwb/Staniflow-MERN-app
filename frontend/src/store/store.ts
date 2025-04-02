@@ -3,14 +3,13 @@ import api from "../api/api";
 import { userApi } from "../api/userApi";
 import WebSocketService from "../api/websocket";
 import authReducer, { setAccessToken } from "./authSlice";
-import projectCreateModalReducer from "./projectCreateModalSlice";
-
+import modalReducer from "./modalSlice";
 WebSocketService.connect();
 
 export const store = configureStore({
 	reducer: {
 		auth: authReducer,
-		projectCreateModal: projectCreateModalReducer,
+		modal: modalReducer,
 		[api.reducerPath]: api.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>

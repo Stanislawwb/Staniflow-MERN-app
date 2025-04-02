@@ -1,10 +1,20 @@
 import { useDispatch } from "react-redux";
 import Projects from "../components/Projects";
-import { openProjectCreateModal } from "../store/projectCreateModalSlice";
+import { openModal } from "../store/modalSlice";
 import { AppDispatch } from "../store/store";
+import { useGetMeQuery } from "../api/userApi";
+import { useEffect } from "react";
+import { setUser } from "../store/authSlice";
 
 const Dashboard = () => {
 	const dispatch = useDispatch<AppDispatch>();
+	const { data: currentUser } = useGetMeQuery();
+
+	useEffect(() => {
+		if (currentUser) {
+			dispatch(setUser(currentUser));
+		}
+	}, [currentUser, dispatch]);
 
 	return (
 		<div className="dashboard">
@@ -15,7 +25,16 @@ const Dashboard = () => {
 
 						<button
 							className="btn btn--green"
-							onClick={() => dispatch(openProjectCreateModal())}
+							onClick={() =>
+								dispatch(
+									openModal({
+										type: "project-create",
+										payload: {
+											currentUserId: currentUser?._id,
+										},
+									})
+								)
+							}
 						>
 							Create project
 						</button>

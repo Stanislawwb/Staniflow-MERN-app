@@ -147,7 +147,7 @@ export const getProject: RequestHandler = async (req, res, next) => {
 };
 
 type UpdateProjectParams = {
-	id: string;
+	projectId: string;
 };
 
 type UpdateProjectBody = {
@@ -169,7 +169,7 @@ export const updateProject: RequestHandler<
 	unknown
 > = async (req, res, next) => {
 	try {
-		const projectId = req.params.id;
+		const projectId = req.params.projectId;
 
 		const { title, description, status, tags, dueDate, members } = req.body;
 

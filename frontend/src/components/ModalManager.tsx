@@ -1,33 +1,27 @@
-// import { useSelector } from "react-redux";
-// import Modal from "./Modal"
-// import { RootState } from "../store/store";
-// import TaskForm from "./TaskForm";
-// import ProjectForm from "./ProjectForm";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import Modal from "./Modal";
+import TaskForm from "./TaskForm";
+import ProjectForm from "./ProjectForm";
 
-// const ModalManager = () => {
-//     const {type, payload} = useSelector((state: RootState) => state.modal)
+const ModalManager = () => {
+	const { type } = useSelector((state: RootState) => state.modal);
 
-//     if(!type) return null;
+	if (!type) return null;
 
-//     let modalContent: React.ReactNode = null;
+	let content = null;
+	switch (type) {
+		case "task-create":
+		case "task-edit":
+			content = <TaskForm />;
+			break;
+		case "project-create":
+		case "project-edit":
+			content = <ProjectForm />;
+			break;
+	}
 
-// switch (type) {
-//     case "task-create":
-//         modalContent = <TaskForm status={payload?.status}/>
-//         break;
-//     case "task-edit":
-//         modalContent = <TaskForm taskId={payload?.taskId}/>
-//         break;
-//     case "project-create":
-//         modalContent = <ProjectForm mode={payload?.status}/>
-//         break;
-//     case "project-create":
-//         modalContent = <TaskForm status={payload?.status}/>
-//         break;
-// }
+	return <Modal>{content}</Modal>;
+};
 
-//   return <Modal>{modalContent}<Modal/>;
-
-// }
-
-// export default ModalManager;
+export default ModalManager;

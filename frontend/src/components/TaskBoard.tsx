@@ -9,6 +9,7 @@ import {
 	type DropResult,
 } from "@hello-pangea/dnd";
 import { useEffect, useState } from "react";
+import { useUpdateProjectMutation } from "../api/projectApi";
 
 const TaskBoard = () => {
 	const { projectId } = useParams();
@@ -16,6 +17,7 @@ const TaskBoard = () => {
 	if (!projectId) return <Navigate to="/not-found" replace />;
 
 	const { data: tasks } = useGetTasksQuery({ projectId });
+	const [updateProject] = useUpdateProjectMutation();
 
 	const taskStatuses: TaskStatus[] = ["To Do", "In Progress", "Done"];
 	const [localTasks, setLocalTasks] = useState<Task[]>([]);
@@ -49,6 +51,31 @@ const TaskBoard = () => {
 			});
 		} catch (error) {
 			console.error("Error updating task status", error);
+		}
+
+		const newTasks = localTasks.map((task) =>
+			task._id === draggableId
+				? { ...task, status: destination.droppableId as TaskStatus }
+				: task
+		);
+
+		const allDone = newTasks.every((task) => task.status === "Done");
+		const anyNotDone = newTasks.some((task) => task.status !== "Done");
+
+		try {
+			if (allDone) {
+				await updateProject({
+					projectId,
+					data: { status: "Completed" },
+				});
+			} else if (anyNotDone) {
+				await updateProject({
+					projectId,
+					data: { status: "In Progress" },
+				});
+			}
+		} catch (err) {
+			console.error("Failed to update project status:", err);
 		}
 	};
 

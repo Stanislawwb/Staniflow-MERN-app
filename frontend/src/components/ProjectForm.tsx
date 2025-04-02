@@ -2,11 +2,15 @@ import { forwardRef, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select, { MultiValue } from "react-select";
+import {
+	useCreateProjectMutation,
+	useUpdateProjectMutation,
+} from "../api/projectApi";
 import { useGetUsersQuery } from "../api/userApi";
-import { closeProjectCreateModal } from "../store/projectCreateModalSlice";
-import { AppDispatch } from "../store/store";
+import { closeModal } from "../store/modalSlice";
+import { AppDispatch, RootState } from "../store/store";
 import {
 	CreateProjectRequest,
 	ProjectMember,
@@ -18,19 +22,20 @@ interface UserOption {
 	label: string;
 }
 
-interface ProjectFormProps {
-	onSubmit: (formData: CreateProjectRequest) => Promise<void>;
-	currentUserId?: string;
-	defaultValues?: Partial<CreateProjectRequest>;
-	mode: "create" | "edit";
-}
+const ProjectForm = () => {
+	const dispatch = useDispatch<AppDispatch>();
+	const { payload, type } = useSelector((state: RootState) => state.modal);
 
-const ProjectForm: React.FC<ProjectFormProps> = ({
-	onSubmit,
-	currentUserId,
-	defaultValues,
-	mode,
-}) => {
+	const isEdit = type === "project-edit";
+	const [createProject] = useCreateProjectMutation();
+	const [updateProject] = useUpdateProjectMutation();
+	const { data: getUsers } = useGetUsersQuery();
+
+	const defaultValues = payload?.defaultValues || {};
+	const projectId = payload?.projectId;
+
+	const currentUser = useSelector((state: RootState) => state.auth.user);
+
 	const {
 		control,
 		handleSubmit,
@@ -38,13 +43,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 		reset,
 	} = useForm<CreateProjectRequest>({ mode: "onChange", defaultValues });
 
-	const dispatch = useDispatch<AppDispatch>();
-
-	const { data: getUsers } = useGetUsersQuery();
-
 	const userOptions: UserOption[] =
 		getUsers
-			?.filter((user) => user._id !== currentUserId)
+			?.filter((user) => user._id !== currentUser?._id)
 			.map((user) => ({
 				value: user._id,
 				label: user.username,
@@ -53,11 +54,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 	const [selectedMembers, setSelectedMembers] = useState<ProjectMember[]>([]);
 
 	useEffect(() => {
-		if (defaultValues) {
-			reset(defaultValues);
-			setSelectedMembers(defaultValues.members || []);
-		}
-	}, [defaultValues, reset]);
+		if (!defaultValues?.title) return;
+
+		reset(defaultValues);
+		setSelectedMembers(defaultValues.members || []);
+	}, [defaultValues?.title]);
 
 	const handleMemberChange = (selectedOptions: MultiValue<UserOption>) => {
 		const membersWithRoles = selectedOptions.map((option) => {
@@ -93,9 +94,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 			return "Due date is required.";
 		}
 
-		const now = new Date();
-
-		if (selectedDate <= now) {
+		if (selectedDate <= new Date()) {
 			return "Due date must be in the future.";
 		}
 
@@ -116,6 +115,41 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 		/>
 	));
 
+	const onSubmit = async (data: CreateProjectRequest) => {
+		try {
+			if (isEdit) {
+				if (!projectId) {
+					console.error("Project ID is required");
+					return;
+				}
+
+				await updateProject({
+					projectId,
+					data: {
+						...data,
+						members: selectedMembers.map((member) => ({
+							userId: member.user._id,
+							role: member.role,
+						})),
+					},
+				}).unwrap();
+			} else {
+				await createProject({
+					...data,
+					members: selectedMembers.map((member) => ({
+						userId: member.user._id,
+						role: member.role,
+					})),
+				}).unwrap();
+			}
+
+			dispatch(closeModal());
+			reset();
+		} catch (error) {
+			console.error("Project submit error", error);
+		}
+	};
+
 	return (
 		<form
 			className="form-project"
@@ -128,10 +162,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 		>
 			<div
 				className="form__close"
-				onClick={() => dispatch(closeProjectCreateModal())}
+				onClick={() => dispatch(closeModal())}
 			></div>
 
-			<h6>{mode === "create" ? "Create Project" : "Edit Project"}</h6>
+			<h6>{isEdit ? "Edit Project" : "Create Project"}</h6>
 
 			<div className="form__rows">
 				<div className="form__row">
@@ -257,7 +291,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 					}`}
 					disabled={!isValid}
 				>
-					{mode === "create" ? "Add Project" : "Save Changes"}
+					{isEdit ? "Save Project" : "Add Changes"}
 				</button>
 			</div>
 		</form>

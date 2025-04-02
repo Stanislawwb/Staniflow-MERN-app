@@ -1,5 +1,4 @@
 import {
-	CreateProjectRequest,
 	CreateProjectResponse,
 	CreateProjectSubmitData,
 	DetailedProject,
@@ -14,7 +13,7 @@ export const projectApi = api.injectEndpoints({
 			CreateProjectSubmitData
 		>({
 			query: (newProject) => ({
-				url: "/projects/",
+				url: "/projects",
 				method: "POST",
 				body: newProject,
 			}),
@@ -22,7 +21,7 @@ export const projectApi = api.injectEndpoints({
 		}),
 		getProjects: builder.query<DetailedProject[], void>({
 			query: () => ({
-				url: "/projects/",
+				url: "/projects",
 			}),
 			providesTags: (result) =>
 				result
@@ -44,14 +43,17 @@ export const projectApi = api.injectEndpoints({
 		}),
 		updateProject: builder.mutation<
 			DetailedProject,
-			{ id: string; data: Partial<CreateProjectRequest> }
+			{ projectId: string; data: Partial<CreateProjectSubmitData> }
 		>({
-			query: ({ id, data }) => ({
-				url: `/projects/${id}`,
+			query: ({ projectId, data }) => ({
+				url: `/projects/${projectId}`,
 				method: "PATCH",
 				body: data,
 			}),
-			invalidatesTags: (_, __, { id }) => [{ type: "Projects", id }],
+			invalidatesTags: (_, __, { projectId }) => [
+				{ type: "Projects", id: projectId },
+				{ type: "Projects", id: "LIST" },
+			],
 		}),
 		deleteProject: builder.mutation<{ message: string }, string>({
 			query: (id) => ({

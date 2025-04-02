@@ -17,6 +17,7 @@ import { RootState } from "./store/store";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import AuthProvider from "./components/AuthProvider";
+import ModalManager from "./components/ModalManager";
 
 function Layout() {
 	const location = useLocation();
@@ -54,6 +55,8 @@ function Layout() {
 			</Routes>
 
 			{!hideHeaderFooter && <Footer />}
+
+			<ModalManager />
 		</>
 	);
 }

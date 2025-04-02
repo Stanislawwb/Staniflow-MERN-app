@@ -97,10 +97,6 @@ export const getTasks: RequestHandler = async (req, res, next) => {
 
 		const tasks = await Task.find({ projectId });
 
-		if (!tasks || tasks.length === 0) {
-			throw createHttpError(404, "No tasks found for this project");
-		}
-
 		res.status(200).json(tasks);
 	} catch (error) {
 		next(error);
