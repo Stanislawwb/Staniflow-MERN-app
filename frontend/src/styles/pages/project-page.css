@@ -1,0 +1,7 @@
+.project-page {
+	.project__header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+	}
+}

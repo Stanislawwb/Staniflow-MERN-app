@@ -1,6 +1,7 @@
 import {
 	CreateProjectRequest,
 	CreateProjectResponse,
+	CreateProjectSubmitData,
 	DetailedProject,
 	ProjectMember,
 } from "../types/projectTypes";
@@ -10,7 +11,7 @@ export const projectApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		createProject: builder.mutation<
 			CreateProjectResponse,
-			CreateProjectRequest
+			CreateProjectSubmitData
 		>({
 			query: (newProject) => ({
 				url: "/projects/",

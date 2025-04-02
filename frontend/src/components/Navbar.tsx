@@ -22,7 +22,7 @@ const Navbar = () => {
 	return (
 		<nav className="navbar">
 			{token && (
-				<Link className="btn" to="/dashboard">
+				<Link className="btn btn--nav" to="/dashboard">
 					Dashboard
 				</Link>
 			)}

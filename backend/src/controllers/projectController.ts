@@ -12,13 +12,15 @@ const findProjectById = async (projectId: string) => {
 	return project;
 };
 
+type Role = "admin" | "developer" | "guest";
+
 type CreateProjectBody = {
 	title: string;
 	description?: string;
 	status?: "In Progress" | "Completed" | "Archived";
 	members?: {
 		userId: string;
-		role?: "admin" | "editor" | "viewer";
+		role?: Role;
 	}[];
 	tags?: string[];
 	dueDate?: string;
@@ -50,14 +52,17 @@ export const createProject: RequestHandler<
 			title,
 			description,
 			status: "In Progress",
-			members,
+			members: members?.map((member) => ({
+				user: member.userId,
+				role: member.role,
+			})),
 			tags,
 			dueDate,
 			createdBy,
 			activityLog: [
 				{
 					action: "project_created",
-					userId: createdBy,
+					user: createdBy,
 					timestamp: new Date(),
 				},
 			],
@@ -107,7 +112,7 @@ export const getProjects: RequestHandler = async (req, res, next) => {
 
 export const getProject: RequestHandler = async (req, res, next) => {
 	try {
-		const projectId = req.params.id;
+		const projectId = req.params.projectId;
 
 		if (!projectId) {
 			throw createHttpError(400, "Project ID is required");
@@ -115,7 +120,8 @@ export const getProject: RequestHandler = async (req, res, next) => {
 
 		const project = await Project.findById(projectId)
 			.populate("createdBy", "username avatar role")
-			.populate("activityLog.userId", "username");
+			.populate("activityLog.user", "username")
+			.populate("members.user", "username avatar");
 
 		if (!project) {
 			throw createHttpError(404, "Project not found");
@@ -165,7 +171,7 @@ export const updateProject: RequestHandler<
 	try {
 		const projectId = req.params.id;
 
-		const { title, description, status, tags, dueDate } = req.body;
+		const { title, description, status, tags, dueDate, members } = req.body;
 
 		const updatedBy = req?.user.id;
 
@@ -202,13 +208,25 @@ export const updateProject: RequestHandler<
 		if (status) project.status = status;
 		if (tags) project.tags = tags;
 
+		if (members && Array.isArray(members)) {
+			project.set(
+				"members",
+				members.map((member) => ({
+					user: member.userId,
+					role: member.role || "developer",
+				}))
+			);
+		}
+
 		project.activityLog.push({
 			action: "project_updated",
-			userId: updatedBy,
+			user: updatedBy,
 			timestamp: new Date(),
 		});
 
 		const updatedProject = await project.save();
+
+		await updatedProject.populate("members.user", "username avatar");
 
 		sendWebSocketMessage("PROJECT_UPDATED", { project: updatedProject });
 
@@ -304,11 +322,11 @@ export const addMemberToProject: RequestHandler<
 			throw createHttpError(400, "Role is required to add a mamber");
 		}
 
-		project.members.push({ userId, role });
+		project.members.push({ user: userId, role });
 
 		project.activityLog.push({
 			action: "member_added",
-			userId: req.user._id,
+			user: req.user._id,
 			timestamp: new Date(),
 		});
 
@@ -373,7 +391,7 @@ export const removeMemberFromProject: RequestHandler<
 
 		project.activityLog.push({
 			action: "member_removed",
-			userId: req.user._id,
+			user: req.user._id,
 			timestamp: new Date(),
 		});
 

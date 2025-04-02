@@ -14,6 +14,8 @@
 @import "./styles/projects.css";
 @import "./styles/project.css";
 @import "./styles/modal-project.css";
+@import "./styles/task-board.css";
+@import "./styles/task-card.css";
 
 /* Override styles for third-party libraries */
 @import "./styles/overwrites/react-select.css";
@@ -26,6 +28,7 @@
 /* Pages */
 @import "./styles/pages/auth-page.css";
 @import "./styles/dashboard.css";
+@import "./styles/pages/project-page.css";
 
 * {
 	margin: 0;

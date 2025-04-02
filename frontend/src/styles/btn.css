@@ -10,7 +10,7 @@
 	cursor: pointer;
 }
 
-.btn:not(.btn--solid):hover {
+.btn--nav:hover {
 	background-color: #f1f1f1;
 }
 

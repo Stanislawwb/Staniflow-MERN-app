@@ -11,7 +11,7 @@ router
 	.get(protect, ProjectController.getProjects);
 
 router
-	.route("/:id")
+	.route("/:projectId")
 	.get(protect, ProjectController.getProject)
 	.delete(protect, ProjectController.deleteProject)
 	.patch(protect, ProjectController.updateProject);

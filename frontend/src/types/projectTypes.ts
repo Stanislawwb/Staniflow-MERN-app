@@ -1,7 +1,16 @@
 export type Role = "admin" | "developer" | "guest";
 
 export interface ProjectMember {
-	user: { _id: string; username: string; avatar: string };
+	user: {
+		_id: string;
+		username: string;
+		avatar: string;
+	};
+	role?: Role;
+}
+
+export interface ProjectMemberInput {
+	userId: string;
 	role?: Role;
 }
 
@@ -10,6 +19,15 @@ export interface CreateProjectRequest {
 	description?: string;
 	status?: "In Progress" | "Completed" | "Archived";
 	members?: ProjectMember[];
+	tags?: string[];
+	dueDate?: string;
+}
+
+export interface CreateProjectSubmitData {
+	title: string;
+	description?: string;
+	status?: "In Progress" | "Completed" | "Archived";
+	members?: ProjectMemberInput[];
 	tags?: string[];
 	dueDate?: string;
 }

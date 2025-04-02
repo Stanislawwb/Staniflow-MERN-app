@@ -5,6 +5,11 @@
 	padding-block: 10px;
 	overflow-x: auto;
 	min-height: 200px;
+	font-size: 15px;
+
+	.projects__header {
+		font-weight: 600;
+	}
 
 	.project__row {
 		position: relative;

@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
@@ -21,18 +21,22 @@ interface UserOption {
 interface ProjectFormProps {
 	onSubmit: (formData: CreateProjectRequest) => Promise<void>;
 	currentUserId?: string;
+	defaultValues?: Partial<CreateProjectRequest>;
+	mode: "create" | "edit";
 }
 
 const ProjectForm: React.FC<ProjectFormProps> = ({
 	onSubmit,
 	currentUserId,
+	defaultValues,
+	mode,
 }) => {
 	const {
 		control,
 		handleSubmit,
 		formState: { errors, isValid },
 		reset,
-	} = useForm<CreateProjectRequest>({ mode: "onChange" });
+	} = useForm<CreateProjectRequest>({ mode: "onChange", defaultValues });
 
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -47,6 +51,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 			})) || [];
 
 	const [selectedMembers, setSelectedMembers] = useState<ProjectMember[]>([]);
+
+	useEffect(() => {
+		if (defaultValues) {
+			reset(defaultValues);
+			setSelectedMembers(defaultValues.members || []);
+		}
+	}, [defaultValues, reset]);
 
 	const handleMemberChange = (selectedOptions: MultiValue<UserOption>) => {
 		const membersWithRoles = selectedOptions.map((option) => {
@@ -120,7 +131,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 				onClick={() => dispatch(closeProjectCreateModal())}
 			></div>
 
-			<h6>Create Project</h6>
+			<h6>{mode === "create" ? "Create Project" : "Edit Project"}</h6>
 
 			<div className="form__rows">
 				<div className="form__row">
@@ -172,18 +183,16 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 					</div>
 				)}
 
-				{selectedMembers.map((member) => (
+				{selectedMembers.map((member, index) => (
 					<div
-						key={member.user._id}
+						key={member.user._id || `member-${index}`}
 						className="form__row form__select"
 					>
 						<label>
 							Role for{" "}
-							{
-								userOptions.find(
-									(u) => u.value === member.user.username
-								)?.label
-							}
+							{userOptions.find(
+								(u) => u.value === member.user._id
+							)?.label || member.user.username}
 						</label>
 						<select
 							value={member.role}
@@ -248,7 +257,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 					}`}
 					disabled={!isValid}
 				>
-					Add Project
+					{mode === "create" ? "Add Project" : "Save Changes"}
 				</button>
 			</div>
 		</form>

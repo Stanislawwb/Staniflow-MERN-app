@@ -1,7 +1,7 @@
-type TaskPriority = "Low" | "Medium" | "High";
+export type TaskPriority = "Low" | "Medium" | "High";
 export type TaskStatus = "To Do" | "In Progress" | "Done";
 
-interface TaskActivity {
+export interface TaskActivity {
 	action:
 		| "task_created"
 		| "task_updated"
@@ -12,7 +12,7 @@ interface TaskActivity {
 	timestamp: string;
 }
 
-interface Task {
+export interface Task {
 	_id: string;
 	title: string;
 	description?: string;

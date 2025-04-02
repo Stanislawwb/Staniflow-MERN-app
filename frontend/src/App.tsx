@@ -23,9 +23,10 @@ function Layout() {
 
 	const noHeaderFooterRoutes = ["/login", "/register", "*"];
 
-	const isNotFound = !["/", "/login", "/register", "/dashboard"].includes(
-		location.pathname
-	);
+	const isNotFound =
+		!["/", "/login", "/register", "/dashboard"].includes(
+			location.pathname
+		) && !location.pathname.startsWith("/projects/");
 
 	const hideHeaderFooter =
 		noHeaderFooterRoutes.includes(location.pathname) || isNotFound;

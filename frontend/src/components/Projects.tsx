@@ -6,7 +6,10 @@ import {
 import { useGetMeQuery } from "../api/userApi";
 import { closeProjectCreateModal } from "../store/projectCreateModalSlice";
 import { AppDispatch } from "../store/store";
-import { CreateProjectRequest } from "../types/projectTypes";
+import {
+	CreateProjectRequest,
+	CreateProjectSubmitData,
+} from "../types/projectTypes";
 import Modal from "./Modal";
 import ProjectForm from "./ProjectForm";
 import ProjectsList from "./ProjectsList";
@@ -19,7 +22,15 @@ const Projects: React.FC = () => {
 
 	const handleCreateProject = async (formData: CreateProjectRequest) => {
 		try {
-			await createProject(formData).unwrap();
+			const transformedData: CreateProjectSubmitData = {
+				...formData,
+				members: formData.members?.map((member) => ({
+					userId: member.user._id,
+					role: member.role,
+				})),
+			};
+
+			await createProject(transformedData).unwrap();
 
 			dispatch(closeProjectCreateModal());
 		} catch (error) {
@@ -35,6 +46,7 @@ const Projects: React.FC = () => {
 				<ProjectForm
 					onSubmit={handleCreateProject}
 					currentUserId={currentUser?._id}
+					mode="create"
 				/>
 			</Modal>
 		</>

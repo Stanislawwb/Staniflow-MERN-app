@@ -19,7 +19,6 @@ const ProjectsList: React.FC<ProjectListProps> = ({ projects }) => {
 		"In Progress": "project__status--purple",
 		Archived: "project__status--red",
 	};
-	console.log(projects);
 
 	return (
 		<div
