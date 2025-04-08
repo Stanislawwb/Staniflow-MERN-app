@@ -1,9 +1,13 @@
 import { useDispatch } from "react-redux";
 import { Navigate, useParams } from "react-router-dom";
 import { useGetProjectQuery } from "../api/projectApi";
-import TaskBoard from "../components/TaskBoard";
+import ProjectHeader from "../components/project/ProjectHeader";
+import ProjectTabs from "../components/project/ProjectTabs";
+import TaskBoard from "../components/project/TaskBoard";
 import { openModal } from "../store/modalSlice";
 import { AppDispatch } from "../store/store";
+import { useState } from "react";
+import Overview from "../components/project/Overview";
 
 const SingleProjectPage = () => {
 	const { projectId } = useParams();
@@ -13,45 +17,45 @@ const SingleProjectPage = () => {
 
 	const { data: project } = useGetProjectQuery(projectId);
 
+	const handleEditProject = () => {
+		if (!project) return;
+
+		dispatch(
+			openModal({
+				type: "project-edit",
+				payload: {
+					projectId,
+					defaultValues: {
+						title: project?.title,
+						description: project?.description,
+						members: project?.members,
+						dueDate: project?.dueDate,
+					},
+				},
+			})
+		);
+	};
+
+	const [activeTab, setActiveTab] = useState(1);
+
+	const tabItems = [{ label: "Overview" }, { label: "Tasks" }];
+
 	return (
 		<div className="project-page">
 			<div className="project__inner">
-				<div className="shell">
-					<div className="project__header">
-						<div className="project__header-content">
-							<h1 className="h5">{project?.title}</h1>
+				<ProjectHeader project={project} onEdit={handleEditProject} />
 
-							<p>{project?.description}</p>
-						</div>
+				<ProjectTabs
+					items={tabItems}
+					activeIndex={activeTab}
+					onTabClick={(index) => setActiveTab(index)}
+				/>
 
-						<div className="project__header-actions">
-							<button
-								className="btn btn--green"
-								onClick={() =>
-									dispatch(
-										openModal({
-											type: "project-edit",
-											payload: {
-												projectId,
-												defaultValues: {
-													title: project?.title,
-													description:
-														project?.description,
-													members: project?.members,
-													dueDate: project?.dueDate,
-												},
-											},
-										})
-									)
-								}
-							>
-								Edit Project
-							</button>
-						</div>
-					</div>
+				<div className="project__content">
+					{activeTab === 0 && <Overview />}
+
+					{activeTab === 1 && <TaskBoard />}
 				</div>
-
-				<TaskBoard />
 			</div>
 		</div>
 	);

@@ -9,11 +9,11 @@
 @import "./styles/socials.css";
 @import "./styles/not-found.css";
 @import "./styles/form-auth.css";
-@import "./styles/form-project.css";
+@import "./styles/form-modal.css";
 @import "./styles/helpers.css";
 @import "./styles/projects.css";
 @import "./styles/project.css";
-@import "./styles/modal-project.css";
+@import "./styles/modal.css";
 @import "./styles/task-board.css";
 @import "./styles/task-card.css";
 

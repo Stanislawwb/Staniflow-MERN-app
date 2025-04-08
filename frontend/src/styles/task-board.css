@@ -1,6 +1,4 @@
 .task-board {
-	background-color: tomato;
-
 	.task-board__inner {
 		padding-block: 20px;
 	}
@@ -36,6 +34,8 @@
 
 	.task-board__column-tasks {
 		margin-bottom: 10px;
+		max-height: 60vh;
+		overflow-y: auto;
 	}
 
 	.task-board__column button {

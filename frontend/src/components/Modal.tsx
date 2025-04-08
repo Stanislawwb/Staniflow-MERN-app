@@ -12,7 +12,7 @@ const Modal: React.FC<ModalProps> = ({ children }) => {
 
 	return (
 		<div
-			className={`modal-project ${displayModal ? "active" : ""}`}
+			className={`modal ${displayModal ? "active" : ""}`}
 			onClick={() => dispatch(closeModal())}
 		>
 			<div className="modal__content">{children}</div>

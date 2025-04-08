@@ -29,9 +29,7 @@ const Dashboard = () => {
 								dispatch(
 									openModal({
 										type: "project-create",
-										payload: {
-											currentUserId: currentUser?._id,
-										},
+										payload: {},
 									})
 								)
 							}

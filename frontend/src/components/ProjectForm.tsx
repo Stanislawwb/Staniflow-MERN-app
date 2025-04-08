@@ -152,7 +152,7 @@ const ProjectForm = () => {
 
 	return (
 		<form
-			className="form-project"
+			className="form-modal"
 			onSubmit={handleSubmit(async (data) => {
 				await onSubmit({ ...data, members: selectedMembers });
 				setSelectedMembers([]);

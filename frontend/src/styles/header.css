@@ -1,5 +1,6 @@
 .header {
 	padding: 20px 0;
+	border-bottom: 2px solid #f7f7f7;
 
 	.header__inner {
 		display: flex;

@@ -1,4 +1,4 @@
-.modal-project {
+.modal {
 	position: fixed;
 	inset: 0;
 	height: 100%;
@@ -16,7 +16,7 @@
 	visibility: hidden;
 }
 
-.modal-project.active {
+.modal.active {
 	opacity: 1;
 	pointer-events: initial;
 	visibility: visible;

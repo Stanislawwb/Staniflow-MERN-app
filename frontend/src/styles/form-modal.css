@@ -1,4 +1,4 @@
-.form-project {
+.form-modal {
 	background-color: #fff;
 	width: 500px;
 	position: relative;
@@ -19,20 +19,30 @@
 	}
 
 	input,
-	select {
-		height: 30px;
+	select,
+	textarea {
 		width: 100%;
+		resize: none;
 		border-radius: 6px;
 		border: 1px solid #e8e8e8;
-		transition: border-color 0.3s, box-shadow 0.3s;
 		padding-inline: 10px;
 		color: #646464;
+		transition: border-color 0.3s, box-shadow 0.3s;
 
 		&:focus {
 			border-color: #553ed0;
 			outline: none;
 			box-shadow: 0 0 0 5px rgba(182, 182, 255, 0.16);
 		}
+	}
+
+	input,
+	select {
+		height: 30px;
+	}
+
+	textarea {
+		padding-block: 5px;
 	}
 
 	select {
@@ -62,8 +72,8 @@
 		display: block;
 		margin: 0 auto;
 		width: auto;
-		min-width: 150px;
-		padding: 12px 15px;
+		min-width: 120px;
+		padding: 12px 20px;
 	}
 
 	.form__actions button.disabled {
@@ -110,6 +120,7 @@
 
 	.form__row p.error {
 		margin-top: 5px;
+		font-size: 13px;
 	}
 
 	.form__row + .form__row {

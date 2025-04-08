@@ -8,6 +8,7 @@
 	text-align: left;
 	border: 2px solid transparent;
 	transition: border-color 0.3s;
+	margin-bottom: 2px;
 
 	&:hover {
 		border-color: #5a5a5a;

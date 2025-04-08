@@ -53,6 +53,18 @@ export const createTask: RequestHandler<
 			throw createHttpError(400, "Title is required");
 		}
 
+		const existingTask = await Task.findOne({
+			projectId,
+			title: { $regex: `^${title}$`, $options: "i" },
+		});
+
+		if (existingTask) {
+			throw createHttpError(
+				409,
+				"A task with the same title already exists in this project"
+			);
+		}
+
 		const taskData = {
 			title,
 			description,

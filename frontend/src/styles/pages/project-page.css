@@ -1,7 +1,38 @@
 .project-page {
-	.project__header {
+	padding: 20px 0;
+
+	.project__header-inner {
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
+		margin: 10px 0;
+	}
+
+	.project__content {
+		display: flex;
+		flex-direction: column;
+		min-height: 400px;
+		background-color: #f7f7f7;
+	}
+
+	.project__tabs {
+	}
+
+	.project__tabs button {
+		background-color: transparent;
+		border: none;
+		font-size: 14px;
+		font-weight: 700;
+		cursor: pointer;
+		padding: 20px 12px;
+	}
+
+	.project__tabs button.active {
+		border-bottom: 2px solid #727dad;
+	}
+
+	.project__tabs-inner {
+		display: flex;
+		gap: 20px;
 	}
 }
