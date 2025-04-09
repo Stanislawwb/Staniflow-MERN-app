@@ -145,17 +145,51 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 
 		await isUserPartOfProject(updatedBy, task.projectId.toString());
 
-		if (title) task.title = title;
-		if (description) task.description = description;
-		if (dueDate) task.dueDate = new Date(dueDate);
-		if (priority) task.priority = priority;
-		if (status && task.status !== status) task.status = status;
+		let hasChanges = false;
 
-		task.activityLog.push({
-			action: "task_updated",
-			userId: updatedBy,
-			timestamp: new Date(),
-		});
+		if (title && task.title !== title) {
+			task.title = title;
+			hasChanges = true;
+		}
+
+		if (description && task.description !== description) {
+			task.description = description;
+			hasChanges = true;
+		}
+
+		if (
+			dueDate &&
+			new Date(task.dueDate || 0).getTime() !==
+				new Date(dueDate).getTime()
+		) {
+			task.dueDate = new Date(dueDate);
+			hasChanges = true;
+		}
+
+		if (priority && task.priority !== priority) {
+			task.priority = priority;
+			hasChanges = true;
+		}
+
+		if (status && task.status !== status) {
+			task.status = status;
+
+			task.activityLog.push({
+				action: "status_updated",
+				userId: updatedBy,
+				timestamp: new Date(),
+			});
+
+			hasChanges = true;
+		}
+
+		if (hasChanges) {
+			task.activityLog.push({
+				action: "task_updated",
+				userId: updatedBy,
+				timestamp: new Date(),
+			});
+		}
 
 		const updatedTask = await task.save();
 
