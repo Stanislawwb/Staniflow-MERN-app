@@ -2,10 +2,7 @@ import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { useUpdateProjectMutation } from "../../api/projectApi";
-import {
-	useGetTasksQuery,
-	useUpdateTaskStatusMutation,
-} from "../../api/taskApi";
+import { useGetTasksQuery, useUpdateTaskMutation } from "../../api/taskApi";
 import { Task, TaskStatus } from "../../types/taskTypes";
 import TaskColumn from "./TaskColumn";
 
@@ -16,7 +13,7 @@ const TaskBoard = () => {
 
 	const { data: tasks } = useGetTasksQuery({ projectId });
 	const [updateProject] = useUpdateProjectMutation();
-	const [updateStatus] = useUpdateTaskStatusMutation();
+	const [updateTask] = useUpdateTaskMutation();
 
 	const taskStatuses: TaskStatus[] = ["To Do", "In Progress", "Done"];
 	const [localTasks, setLocalTasks] = useState<Task[]>([]);
@@ -42,9 +39,11 @@ const TaskBoard = () => {
 		setLocalTasks(updatedTasks);
 
 		try {
-			await updateStatus({
+			await updateTask({
 				taskId: draggableId,
-				status: destination.droppableId as TaskStatus,
+				data: {
+					status: destination.droppableId as TaskStatus,
+				},
 			});
 		} catch (error) {
 			console.error("Error updating task status", error);

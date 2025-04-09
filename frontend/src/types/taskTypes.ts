@@ -47,5 +47,3 @@ export interface AssignUsersToTaskResponse {
 	message: string;
 	assignedUsers: string[];
 }
-
-export interface UpdateTaskStatusResponse extends Task {}

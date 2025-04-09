@@ -21,7 +21,6 @@ const websocketEvents: Record<string, ("Projects" | "Tasks")[]> = {
 	TASK_UPDATED: ["Tasks", "Projects"],
 	TASK_DELETED: ["Tasks", "Projects"],
 	TASK_ASSIGNED: ["Tasks", "Projects"],
-	TASK_STATUS_UPDATED: ["Tasks", "Projects"],
 
 	PROJECT_CREATED: ["Projects"],
 	PROJECT_UPDATED: ["Projects"],

@@ -33,12 +33,8 @@ router
 	.patch(protect, TaskController.updateTask)
 	.delete(protect, TaskController.deleteTask);
 
-router
-	.route("/tasks/:taskId/assign")
-	.patch(protect, TaskController.assignUsersToTask);
+router.route("/tasks/:taskId/assign");
 
-router
-	.route("/tasks/:taskId/status")
-	.patch(protect, TaskController.updateTaskStatus);
+router.route("/tasks/:taskId/status");
 
 export default router;

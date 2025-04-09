@@ -4,8 +4,6 @@ import {
 	CreateTaskResponse,
 	GetTaskResponse,
 	GetTasksResponse,
-	TaskStatus,
-	UpdateTaskStatusResponse,
 } from "../types/taskTypes";
 import api from "./api";
 
@@ -76,19 +74,6 @@ export const taskApi = api.injectEndpoints({
 				{ type: "Tasks", id: taskId },
 			],
 		}),
-		updateTaskStatus: builder.mutation<
-			UpdateTaskStatusResponse,
-			{ taskId: string; status: TaskStatus }
-		>({
-			query: ({ taskId, status }) => ({
-				url: `/projects/tasks/${taskId}/status`,
-				method: "PATCH",
-				body: { status },
-			}),
-			invalidatesTags: (_, __, { taskId }) => [
-				{ type: "Tasks", id: taskId },
-			],
-		}),
 	}),
 });
 
@@ -99,5 +84,4 @@ export const {
 	useUpdateTaskMutation,
 	useDeleteTaskMutation,
 	useAssignUsersToTaskMutation,
-	useUpdateTaskStatusMutation,
 } = taskApi;
