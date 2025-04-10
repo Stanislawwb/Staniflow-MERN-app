@@ -27,6 +27,8 @@ router
 	.post(protect, TaskController.createTask)
 	.get(protect, TaskController.getTasks);
 
+router.route("/tasks/reorder").patch(protect, TaskController.reorderTasks);
+
 router
 	.route("/tasks/:taskId")
 	.get(protect, TaskController.getTask)

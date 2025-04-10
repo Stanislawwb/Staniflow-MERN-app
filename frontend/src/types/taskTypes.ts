@@ -21,6 +21,7 @@ export interface Task {
 	projectId: string;
 	dueDate?: string;
 	priority?: TaskPriority;
+	order: number;
 	activityLog: TaskActivity;
 }
 

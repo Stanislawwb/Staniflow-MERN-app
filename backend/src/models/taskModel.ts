@@ -44,6 +44,12 @@ const taskSchema = new Schema(
 			enum: ["Low", "Medium", "High"],
 			default: "Medium",
 		},
+		order: {
+			type: Number,
+			required: true,
+			default: 0,
+			index: true,
+		},
 		activityLog: {
 			type: [
 				{

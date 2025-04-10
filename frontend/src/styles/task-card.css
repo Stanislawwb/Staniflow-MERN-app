@@ -1,21 +1,51 @@
 .task-card {
-	padding: 10px;
+	position: relative;
+	padding: 10px 30px;
 	background-color: #fff;
 	border-radius: 10px;
 	box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px 0px;
-	border: none;
 	width: 100%;
 	text-align: left;
-	border: 2px solid transparent;
-	transition: border-color 0.3s;
+	transition: border-radius 0.3s;
 	margin-bottom: 2px;
-
-	&:hover {
-		border-color: #5a5a5a;
-	}
+	overflow: hidden;
+	cursor: pointer !important;
 
 	p {
 		font-size: 14px;
+	}
+
+	.task__indicator {
+		position: absolute;
+		right: 0;
+		top: 50%;
+		width: 35px;
+		height: 100%;
+		transform: translateY(-50%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 3px;
+	}
+
+	.task__indicator span {
+		height: 10px;
+		width: 2px;
+		background-color: #fff;
+		display: inline-block;
+		z-index: 10;
+	}
+
+	.task__priority-1 {
+		background-color: #34d399;
+	}
+
+	.task__priority-2 {
+		background-color: #fbbf24;
+	}
+
+	.task__priority-3 {
+		background-color: #f87171;
 	}
 }
 

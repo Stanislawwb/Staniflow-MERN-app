@@ -4,6 +4,7 @@ import {
 	CreateTaskResponse,
 	GetTaskResponse,
 	GetTasksResponse,
+	TaskStatus,
 } from "../types/taskTypes";
 import api from "./api";
 
@@ -74,6 +75,17 @@ export const taskApi = api.injectEndpoints({
 				{ type: "Tasks", id: taskId },
 			],
 		}),
+		reorderTasks: builder.mutation<
+			{ message: string },
+			{ updates: { taskId: string; status: TaskStatus; order: number }[] }
+		>({
+			query: ({ updates }) => ({
+				url: "/projects/tasks/reorder",
+				method: "PATCH",
+				body: updates,
+			}),
+			invalidatesTags: [{ type: "Tasks", id: "LIST" }],
+		}),
 	}),
 });
 
@@ -84,4 +96,5 @@ export const {
 	useUpdateTaskMutation,
 	useDeleteTaskMutation,
 	useAssignUsersToTaskMutation,
+	useReorderTasksMutation,
 } = taskApi;

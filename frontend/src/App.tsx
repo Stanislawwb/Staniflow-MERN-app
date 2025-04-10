@@ -1,23 +1,25 @@
+import { useSelector } from "react-redux";
 import {
-	BrowserRouter as Router,
 	Route,
+	BrowserRouter as Router,
 	Routes,
 	useLocation,
 } from "react-router-dom";
-import Homepage from "./pages/Homepage";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Header from "./components/Header";
-import Register from "./pages/Register";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AuthProvider from "./components/AuthProvider";
 import Footer from "./components/Footer";
-import NotFoundPage from "./pages/NotFoundPage";
-import SingleProjectPage from "./pages/SingleProjectPage";
-import { useSelector } from "react-redux";
-import { RootState } from "./store/store";
+import Header from "./components/Header";
+import ModalManager from "./components/ModalManager";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
-import AuthProvider from "./components/AuthProvider";
-import ModalManager from "./components/ModalManager";
+import Dashboard from "./pages/Dashboard";
+import Homepage from "./pages/Homepage";
+import Login from "./pages/Login";
+import NotFoundPage from "./pages/NotFoundPage";
+import Register from "./pages/Register";
+import SingleProjectPage from "./pages/SingleProjectPage";
+import { RootState } from "./store/store";
 
 function Layout() {
 	const location = useLocation();
@@ -70,7 +72,10 @@ function App() {
 	return (
 		<Router>
 			<AuthProvider>
-				<Layout />
+				<>
+					<Layout />
+					<ToastContainer position="bottom-right" autoClose={4000} />
+				</>
 			</AuthProvider>
 		</Router>
 	);

@@ -214,6 +214,7 @@ export const deleteTask: RequestHandler = async (req, res, next) => {
 		await task?.deleteOne();
 
 		sendWebSocketMessage("TASK_DELETED", { taskId });
+
 		res.status(200).json({ message: "Task deleted successfully" });
 	} catch (error) {
 		next(error);
@@ -308,6 +309,71 @@ export const assignUsersToTask: RequestHandler = async (req, res, next) => {
 			message: "Users successfully assigned to the task",
 			assignedUsers: task.assignedTo,
 		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+interface ReorderTaskPayload {
+	taskId: string;
+	status: "To Do" | "In Progress" | "Done";
+	order: number;
+	projectId: string;
+}
+
+export const reorderTasks: RequestHandler = async (req, res, next) => {
+	try {
+		const userId = req?.user?.id;
+		const updates: ReorderTaskPayload[] = req.body;
+
+		if (!userId) {
+			throw createHttpError(401, "Unauthorized");
+		}
+
+		if (!Array.isArray(updates) || updates.length === 0) {
+			throw createHttpError(400, "Invalid update payload");
+		}
+
+		const bulkOps = [];
+
+		for (const update of updates) {
+			if (
+				!mongoose.Types.ObjectId.isValid(update.taskId) ||
+				typeof update.order !== "number" ||
+				!["To Do", "In Progress", "Done"].includes(update.status)
+			) {
+				continue;
+			}
+
+			bulkOps.push({
+				updateOne: {
+					filter: { _id: update.taskId },
+					update: {
+						$set: {
+							order: update.order,
+							status: update.status,
+						},
+					},
+				},
+			});
+		}
+
+		if (bulkOps.length === 0) {
+			throw createHttpError(400, "No valid updates found");
+		}
+
+		await Task.bulkWrite(bulkOps);
+
+		sendWebSocketMessage("TASK_REORDERED", {
+			projectId: updates[0]?.projectId || "unknown",
+			updatedTasks: updates.map((u) => ({
+				taskId: u.taskId,
+				status: u.status,
+				order: u.order,
+			})),
+		});
+
+		res.status(200).json({ message: "Tasks reordered successfully" });
 	} catch (error) {
 		next(error);
 	}
