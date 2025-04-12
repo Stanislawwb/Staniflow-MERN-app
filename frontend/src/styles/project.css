@@ -1,6 +1,0 @@
-.project {
-}
-
-.project + .project {
-	margin-top: 10px;
-}

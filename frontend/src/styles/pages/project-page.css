@@ -15,7 +15,38 @@
 		background-color: #f7f7f7;
 	}
 
-	.project__tabs {
+	.project__header-content {
+		flex-grow: 1;
+		max-width: 45%;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.project__header-content h1 {
+		margin-bottom: 10px;
+		font-size: 24px;
+	}
+
+	.project__header-content svg {
+		width: 50px;
+		height: 50px;
+	}
+
+	.project__header-info {
+		flex: 1;
+	}
+
+	.project__header-progress {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.project__header-progress span {
+		white-space: nowrap;
+		font-weight: 700;
+		font-size: 14px;
 	}
 
 	.project__tabs button {
@@ -25,10 +56,19 @@
 		font-weight: 700;
 		cursor: pointer;
 		padding: 20px 12px;
+		position: relative;
 	}
 
 	.project__tabs button.active {
-		border-bottom: 2px solid #727dad;
+		&:after {
+			position: absolute;
+			content: "";
+			width: 100%;
+			height: 2px;
+			background-color: #727dad;
+			bottom: 0;
+			left: 0;
+		}
 	}
 
 	.project__tabs-inner {

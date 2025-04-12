@@ -1,4 +1,4 @@
-import { useGetProjectsQuery } from "../api/projectApi";
+import { useGetProjectsQuery } from "../../api/projectApi";
 import ProjectsList from "./ProjectsList";
 
 const Projects: React.FC = () => {

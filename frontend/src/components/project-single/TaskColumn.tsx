@@ -30,7 +30,13 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
 					ref={provided.innerRef}
 					{...provided.droppableProps}
 				>
-					<span className="task-board__column-title">{status}</span>
+					<div className="task-board__column-title">
+						<span>{status}</span>
+
+						<span className="task-board__column-length">
+							{tasks.length}
+						</span>
+					</div>
 
 					<div className="task-board__column-tasks">
 						{sortedTasks.map((task, index) => (

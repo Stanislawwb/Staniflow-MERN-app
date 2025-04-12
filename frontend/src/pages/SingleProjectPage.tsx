@@ -1,22 +1,34 @@
 import { useDispatch } from "react-redux";
 import { Navigate, useParams } from "react-router-dom";
 import { useGetProjectQuery } from "../api/projectApi";
-import ProjectHeader from "../components/project/ProjectHeader";
-import ProjectTabs from "../components/project/ProjectTabs";
-import TaskBoard from "../components/project/TaskBoard";
+import ProjectHeader from "../components/project-single/ProjectHeader";
+import ProjectTabs from "../components/project-single/ProjectTabs";
+import TaskBoard from "../components/project-single/TaskBoard";
 import { openModal } from "../store/modalSlice";
 import { AppDispatch } from "../store/store";
 import { useState } from "react";
-import Overview from "../components/project/Overview";
+import Overview from "../components/project-single/Overview";
 
 const SingleProjectPage = () => {
 	const { projectId } = useParams();
 	const dispatch = useDispatch<AppDispatch>();
+	const [activeTab, setActiveTab] = useState(1);
 
-	if (!projectId) return <Navigate to="/not-found" replace />;
+	const {
+		data: project,
+		isError,
+		isLoading,
+	} = useGetProjectQuery(projectId!, {
+		skip: !projectId,
+	});
 
-	const { data: project } = useGetProjectQuery(projectId);
+	if (!projectId || isError || (!isLoading && !project)) {
+		return <Navigate to="/not-found" replace />;
+	}
 
+	if (isLoading || !project) {
+		return null;
+	}
 	const handleEditProject = () => {
 		if (!project) return;
 
@@ -35,8 +47,6 @@ const SingleProjectPage = () => {
 			})
 		);
 	};
-
-	const [activeTab, setActiveTab] = useState(1);
 
 	const tabItems = [{ label: "Overview" }, { label: "Tasks" }];
 

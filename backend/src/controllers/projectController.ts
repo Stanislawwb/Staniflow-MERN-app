@@ -1,10 +1,10 @@
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
-import mongoose from "mongoose";
-import Project from "../models/projectModel";
-import Task from "../models/taskModel";
+import mongoose, { Types } from "mongoose";
+import Project, { ProjectDocument } from "../models/projectModel";
 import User from "../models/userModel";
 import { sendWebSocketMessage } from "../service/websocketService";
+import { calculateProjectProgress } from "../util/project/calculateProgress";
 
 const findProjectById = async (projectId: string) => {
 	const project = await Project.findById(projectId);
@@ -77,7 +77,7 @@ export const createProject: RequestHandler<
 
 export const getProjects: RequestHandler = async (req, res, next) => {
 	try {
-		const projects = await Project.find({
+		const projects: ProjectDocument[] = await Project.find({
 			$or: [
 				{ createdBy: req.user._id },
 				{ "members.user": req.user._id },
@@ -88,18 +88,12 @@ export const getProjects: RequestHandler = async (req, res, next) => {
 
 		const projectsWithProgress = await Promise.all(
 			projects.map(async (project) => {
-				const tasks = await Task.find({ projectId: project._id });
-
-				const total = tasks.length;
-
-				const completedTasks = tasks.filter(
-					(task) => task.status === "Done"
-				).length;
+				const projectId = (project._id as Types.ObjectId).toString();
+				const progress = await calculateProjectProgress(projectId);
 
 				return {
 					...project.toObject(),
-					tasksCount: total,
-					completedTasksCount: completedTasks,
+					...progress,
 				};
 			})
 		);
@@ -140,7 +134,14 @@ export const getProject: RequestHandler = async (req, res, next) => {
 			);
 		}
 
-		res.status(200).json(project);
+		const progress = await calculateProjectProgress(
+			(project._id as Types.ObjectId).toString()
+		);
+
+		res.status(200).json({
+			...project.toObject(),
+			...progress,
+		});
 	} catch (error) {
 		next(error);
 	}

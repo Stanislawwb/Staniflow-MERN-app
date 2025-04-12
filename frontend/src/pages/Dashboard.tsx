@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import Projects from "../components/Projects";
+import Projects from "../components/projects/Projects";
 import { openModal } from "../store/modalSlice";
 import { AppDispatch } from "../store/store";
 import { useGetMeQuery } from "../api/userApi";

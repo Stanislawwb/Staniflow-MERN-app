@@ -13,9 +13,22 @@
 	.task-board__column-title {
 		font-weight: 600;
 		font-size: 14px;
-		display: inline-block;
 		margin-bottom: 10px;
-		padding-inline: 10px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.task-board__column-length {
+		background-color: #fff;
+		font-size: 15px;
+		font-weight: 700;
+		border-radius: 8px;
+		height: 25px;
+		width: 25px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.task-board__columns {
@@ -26,8 +39,8 @@
 	}
 
 	.task-board__column {
-		background-color: #f1f2f4;
-		padding: 12px 7px;
+		background-color: #a7c4ff;
+		padding: 12px 14px;
 		border-radius: 14px;
 		box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px 0px;
 	}
