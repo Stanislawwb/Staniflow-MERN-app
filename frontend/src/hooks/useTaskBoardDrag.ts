@@ -9,9 +9,14 @@ import { Task, TaskStatus } from "../types/taskTypes";
 interface UseTaskBoardDragProps {
 	projectId: string;
 	tasks: Task[];
+	projectStatus?: string;
 }
 
-const useTaskBoardDrag = ({ projectId, tasks }: UseTaskBoardDragProps) => {
+const useTaskBoardDrag = ({
+	projectId,
+	tasks,
+	projectStatus,
+}: UseTaskBoardDragProps) => {
 	const [reorderTasks] = useReorderTasksMutation();
 	const [updateProject] = useUpdateProjectMutation();
 
@@ -91,25 +96,42 @@ const useTaskBoardDrag = ({ projectId, tasks }: UseTaskBoardDragProps) => {
 		);
 
 		try {
-			await reorderTasks({ updates }).unwrap();
+			dispatch(
+				taskApi.util.updateQueryData(
+					"getTasks",
+					{ projectId },
+					(draft) => {
+						updates.forEach(({ taskId, status, order }) => {
+							const task = draft.find((t) => t._id === taskId);
+							if (task) {
+								task.status = status;
+								task.order = order;
+							}
+						});
 
-			// Optionally update project status based on all task statuses
-			const allDone = updates.every((update) => update.status === "Done");
-			const anyNotDone = updates.some(
-				(update) => update.status !== "Done"
+						const allTasksAreDone = draft.every(
+							(task) => task.status === "Done"
+						);
+
+						if (allTasksAreDone && projectStatus !== "Completed") {
+							updateProject({
+								projectId,
+								data: { status: "Completed" },
+							});
+						} else if (
+							!allTasksAreDone &&
+							projectStatus !== "In Progress"
+						) {
+							updateProject({
+								projectId,
+								data: { status: "In Progress" },
+							});
+						}
+					}
+				)
 			);
 
-			if (allDone) {
-				await updateProject({
-					projectId,
-					data: { status: "Completed" },
-				});
-			} else if (anyNotDone) {
-				await updateProject({
-					projectId,
-					data: { status: "In Progress" },
-				});
-			}
+			await reorderTasks({ updates }).unwrap();
 		} catch (error) {
 			toast.error("Failed to reorder tasks.");
 		}

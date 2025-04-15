@@ -4,6 +4,7 @@ import Task from "../models/taskModel";
 import { isUserPartOfProject } from "../../utils/isUserPartOfProject";
 import mongoose from "mongoose";
 import { sendWebSocketMessage } from "../service/websocketService";
+import Project from "../models/projectModel";
 
 const findTaskById = async (taskId: string) => {
 	const task = await Task.findById(taskId);
@@ -87,6 +88,18 @@ export const createTask: RequestHandler<
 		}
 
 		const newTask = await Task.create(taskData);
+		const allTasks = await Task.find({ projectId });
+
+		const allDone =
+			allTasks.length > 0 && allTasks.every((t) => t.status === "Done");
+
+		if (allDone) {
+			await Project.findByIdAndUpdate(projectId, { status: "Completed" });
+		} else {
+			await Project.findByIdAndUpdate(projectId, {
+				status: "In Progress",
+			});
+		}
 
 		sendWebSocketMessage("TASK_CREATED", { task: newTask });
 		res.status(201).json(newTask);

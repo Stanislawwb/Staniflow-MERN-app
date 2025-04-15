@@ -16,6 +16,9 @@
 @import "./styles/task-board.css";
 @import "./styles/task-card.css";
 @import "./styles/progress-bar.css";
+@import "./styles/members-list.css";
+@import "./styles/overview.css";
+@import "./styles/status.css";
 
 /* Override styles for third-party libraries */
 @import "./styles/overwrites/react-select.css";

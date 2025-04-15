@@ -1,5 +1,21 @@
 export type Role = "admin" | "developer" | "guest";
 
+export interface ProjectActivity {
+	_id: string;
+	action:
+		| "project_created"
+		| "project_updated"
+		| "project_deleted"
+		| "project_member_added"
+		| "project_member_removed"
+		| "archived_project";
+	user: {
+		_id: string;
+		username: string;
+	};
+	timestamp: string;
+}
+
 export interface ProjectMember {
 	user: {
 		_id: string;

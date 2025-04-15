@@ -22,7 +22,6 @@ const Register = () => {
 			setError(error?.data?.error || "Something went wrong.");
 		}
 	};
-	console.log(error);
 
 	return (
 		<AuthLayout

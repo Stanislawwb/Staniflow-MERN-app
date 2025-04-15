@@ -18,9 +18,19 @@ const ProjectsList: React.FC<ProjectListProps> = ({ projects }) => {
 
 			<div role="rowgroup" className="projects__body">
 				{projects && projects.length > 0 ? (
-					projects.map((project, index) => (
-						<ProjectRow project={project} index={index} />
-					))
+					[...projects]
+						.sort(
+							(a, b) =>
+								new Date(b.createdAt).getTime() -
+								new Date(a.createdAt).getTime()
+						)
+						.map((project, index) => (
+							<ProjectRow
+								key={project._id}
+								project={project}
+								index={index}
+							/>
+						))
 				) : (
 					<div role="row">
 						<span role="cell">No projects available</span>

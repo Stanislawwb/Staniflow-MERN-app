@@ -1,0 +1,59 @@
+.overview {
+	padding: 30px 0;
+
+	.overview__header {
+		display: flex;
+		padding-bottom: 20px;
+	}
+
+	.overview__body {
+		display: flex;
+		align-items: flex-start;
+		gap: 30px;
+	}
+
+	.overview__rows {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		width: 50%;
+	}
+
+	.overview__row {
+		display: grid;
+		grid-template-columns: 100px 1fr;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.overview__date {
+		font-weight: 700;
+	}
+
+	.overview__creator {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.overview__creator img {
+		width: 21px;
+		height: 21px;
+		border-radius: 50%;
+	}
+
+	.overview__status--green {
+		background-color: #d7ecde;
+		color: #4fa271;
+	}
+
+	.overview__status--purple {
+		background-color: #e5ddfd;
+		color: #624db1;
+	}
+
+	.overview__status--red {
+		background-color: #ffd4dc;
+		color: #d26c81;
+	}
+}

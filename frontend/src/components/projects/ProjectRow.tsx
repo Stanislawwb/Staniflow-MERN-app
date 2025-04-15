@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { DetailedProject } from "../../types/projectTypes";
 import ProgressBar from "../ProgressBar";
-import ProjectMembers from "./ProjectMembers";
-import { formatDate } from "../../utils/helpers";
+import Members from "../Members";
+import { formatDate, statusClassMap } from "../../utils/helpers";
 
 interface ProjectRowProps {
 	project: DetailedProject;
@@ -10,12 +10,6 @@ interface ProjectRowProps {
 }
 
 const ProjectRow: React.FC<ProjectRowProps> = ({ project, index }) => {
-	const statusClassMap: { [key: string]: string } = {
-		Completed: "project__status--green",
-		"In Progress": "project__status--purple",
-		Archived: "project__status--red",
-	};
-
 	return (
 		<div
 			role="row"
@@ -36,7 +30,7 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, index }) => {
 			</span>
 
 			<span role="cell">
-				<ProjectMembers members={project.members} />
+				<Members members={project.members} />
 			</span>
 
 			<span role="cell">{formatDate(project.createdAt)}</span>
@@ -45,7 +39,7 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, index }) => {
 
 			<span
 				role="cell"
-				className={`project__status ${
+				className={`status ${
 					statusClassMap[
 						project.status as keyof typeof statusClassMap
 					] || ""

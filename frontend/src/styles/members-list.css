@@ -1,0 +1,30 @@
+.members-list {
+	display: flex;
+	align-items: center;
+}
+
+.members-list img {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+.members-list span {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #7f77f1;
+	border: 1px solid #fff;
+	color: #fff;
+	height: 21px;
+	width: 21px;
+	border-radius: 50%;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.members-list span + span {
+	margin-left: -3px;
+}

@@ -7,10 +7,13 @@ type ProjectHeaderProps = {
 };
 
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onEdit }) => {
-	const progress = (
-		(project.completedTasksCount / project.tasksCount) *
-		100
-	).toFixed(2);
+	const progress =
+		project.tasksCount > 0
+			? (
+					(project.completedTasksCount / project.tasksCount) *
+					100
+			  ).toFixed(2)
+			: "0.00";
 
 	return (
 		<div className="project__header">

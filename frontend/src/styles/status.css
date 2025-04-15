@@ -1,0 +1,25 @@
+.status {
+	text-align: center;
+	padding: 5px;
+	border-radius: 16px;
+	font-size: 14px;
+	font-weight: 600;
+	max-width: 120px;
+	z-index: 10;
+	pointer-events: none;
+}
+
+.status--green {
+	background-color: #d7ecde;
+	color: #4fa271;
+}
+
+.status--purple {
+	background-color: #e5ddfd;
+	color: #624db1;
+}
+
+.status--red {
+	background-color: #ffd4dc;
+	color: #d26c81;
+}

@@ -62,9 +62,9 @@ const SingleProjectPage = () => {
 				/>
 
 				<div className="project__content">
-					{activeTab === 0 && <Overview />}
+					{activeTab === 0 && <Overview project={project} />}
 
-					{activeTab === 1 && <TaskBoard />}
+					{activeTab === 1 && <TaskBoard project={project} />}
 				</div>
 			</div>
 		</div>

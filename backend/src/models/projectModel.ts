@@ -60,10 +60,10 @@ const projectSchema = new Schema(
 						enum: [
 							"project_created",
 							"project_updated",
-							"task_added",
 							"status_updated",
 							"member_added",
 							"member_removed",
+							"archived_project",
 						],
 						required: true,
 					},

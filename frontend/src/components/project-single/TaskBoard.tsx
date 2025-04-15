@@ -4,14 +4,23 @@ import { useGetTasksQuery } from "../../api/taskApi";
 import useTaskBoardDrag from "../../hooks/useTaskBoardDrag";
 import { TaskStatus } from "../../types/taskTypes";
 import TaskColumn from "./TaskColumn";
+import { DetailedProject } from "../../types/projectTypes";
 
-const TaskBoard = () => {
+interface TaskBoardProps {
+	project?: DetailedProject;
+}
+
+const TaskBoard: React.FC<TaskBoardProps> = ({ project }) => {
 	const { projectId } = useParams();
 
 	if (!projectId) return <Navigate to="/not-found" replace />;
 
 	const { data: tasks = [] } = useGetTasksQuery({ projectId });
-	const { onDragEnd } = useTaskBoardDrag({ projectId, tasks });
+	const { onDragEnd } = useTaskBoardDrag({
+		projectId,
+		tasks,
+		projectStatus: project?.status,
+	});
 
 	const taskStatuses: TaskStatus[] = ["To Do", "In Progress", "Done"];
 

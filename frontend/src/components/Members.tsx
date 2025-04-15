@@ -1,14 +1,14 @@
-import { DetailedProject } from "../../types/projectTypes";
+import { DetailedProject } from "../types/projectTypes";
 
-interface ProjectMembersProps {
+interface MembersProps {
 	members: DetailedProject["members"];
 }
 
-const ProjectMembers: React.FC<ProjectMembersProps> = ({ members }) => {
+const Members: React.FC<MembersProps> = ({ members }) => {
 	if (!members || members.length === 0) return <span>No members</span>;
 
 	return (
-		<div className="projects__members-list">
+		<div className="members-list">
 			{members.slice(0, 3).map((member) => (
 				<span key={member.user._id}>
 					{member.user.avatar &&
@@ -16,7 +16,7 @@ const ProjectMembers: React.FC<ProjectMembersProps> = ({ members }) => {
 						<img
 							src={member.user.avatar}
 							alt={member.user.username}
-							className="project__member-avatar"
+							className="members__avatar"
 						/>
 					) : (
 						member.user.username.charAt(0).toUpperCase()
@@ -25,7 +25,7 @@ const ProjectMembers: React.FC<ProjectMembersProps> = ({ members }) => {
 			))}
 
 			{members.length > 3 && (
-				<span className="projects__member-list--extra">
+				<span className="member-list--extra">
 					+{members.length - 3}
 				</span>
 			)}
@@ -33,4 +33,4 @@ const ProjectMembers: React.FC<ProjectMembersProps> = ({ members }) => {
 	);
 };
 
-export default ProjectMembers;
+export default Members;
