@@ -158,16 +158,16 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 
 		await isUserPartOfProject(updatedBy, task.projectId.toString());
 
-		let hasChanges = false;
+		let hasNonStatusChanges = false;
 
 		if (title && task.title !== title) {
 			task.title = title;
-			hasChanges = true;
+			hasNonStatusChanges = true;
 		}
 
 		if (description && task.description !== description) {
 			task.description = description;
-			hasChanges = true;
+			hasNonStatusChanges = true;
 		}
 
 		if (
@@ -176,12 +176,12 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 				new Date(dueDate).getTime()
 		) {
 			task.dueDate = new Date(dueDate);
-			hasChanges = true;
+			hasNonStatusChanges = true;
 		}
 
 		if (priority && task.priority !== priority) {
 			task.priority = priority;
-			hasChanges = true;
+			hasNonStatusChanges = true;
 		}
 
 		if (status && task.status !== status) {
@@ -190,13 +190,12 @@ export const updateTask: RequestHandler = async (req, res, next) => {
 			task.activityLog.push({
 				action: "status_updated",
 				userId: updatedBy,
+				status,
 				timestamp: new Date(),
 			});
-
-			hasChanges = true;
 		}
 
-		if (hasChanges) {
+		if (hasNonStatusChanges) {
 			task.activityLog.push({
 				action: "task_updated",
 				userId: updatedBy,
@@ -349,6 +348,12 @@ export const reorderTasks: RequestHandler = async (req, res, next) => {
 
 		const bulkOps = [];
 
+		const taskIds = updates.map((u) => u.taskId);
+		const originalTasks = await Task.find({ _id: { $in: taskIds } }).lean();
+		const originalStatusMap = new Map(
+			originalTasks.map((t) => [t._id.toString(), t.status])
+		);
+
 		for (const update of updates) {
 			if (
 				!mongoose.Types.ObjectId.isValid(update.taskId) ||
@@ -376,6 +381,23 @@ export const reorderTasks: RequestHandler = async (req, res, next) => {
 		}
 
 		await Task.bulkWrite(bulkOps);
+
+		for (const update of updates) {
+			const prevStatus = originalStatusMap.get(update.taskId);
+			if (!prevStatus || prevStatus === update.status) continue;
+
+			const task = await Task.findById(update.taskId);
+			if (!task) continue;
+
+			task.activityLog.push({
+				action: "status_updated",
+				userId,
+				status: update.status,
+				timestamp: new Date(),
+			});
+
+			await task.save();
+		}
 
 		sendWebSocketMessage("TASK_REORDERED", {
 			projectId: updates[0]?.projectId || "unknown",

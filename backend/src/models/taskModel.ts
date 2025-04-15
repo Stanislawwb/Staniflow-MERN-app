@@ -60,13 +60,16 @@ const taskSchema = new Schema(
 							"task_updated",
 							"status_updated",
 							"assigned_to_task",
-							"task_deleted",
 						],
 						required: true,
 					},
 					userId: {
 						type: Schema.Types.ObjectId,
 						ref: "User",
+					},
+					status: {
+						type: String,
+						enum: ["To Do", "In Progress", "Done"],
 					},
 					timestamp: {
 						type: Date,

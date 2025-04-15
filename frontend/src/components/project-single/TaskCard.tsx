@@ -21,6 +21,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
 		}
 	};
 
+	console.log(task);
+
 	const priorityLevel = getPriorityLevel(task?.priority || "");
 
 	return (

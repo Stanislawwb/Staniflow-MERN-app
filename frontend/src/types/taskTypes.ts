@@ -6,10 +6,14 @@ export interface TaskActivity {
 		| "task_created"
 		| "task_updated"
 		| "assigned_to_task"
-		| "task_deleted"
 		| "status_updated";
-	userId: string;
+	user: {
+		_id: string;
+		username: string;
+	};
 	timestamp: string;
+	status?: "To Do" | "In Progress" | "Done";
+	title?: string;
 }
 
 export interface Task {

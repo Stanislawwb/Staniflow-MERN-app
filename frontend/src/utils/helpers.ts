@@ -1,4 +1,5 @@
 import { ProjectActivity } from "../types/projectTypes";
+import { TaskActivity } from "../types/taskTypes";
 
 export const formatDate = (date: string) => {
 	return new Date(date).toLocaleString("en-GB", {
@@ -44,5 +45,32 @@ export const formatProjectActivity = (log: ProjectActivity): string => {
 			}
 		default:
 			return `${username} did something on ${time}`;
+	}
+};
+
+export const formatTaskActivity = (log: TaskActivity): string => {
+	const user = log.user?.username || "Unknown user";
+	const time = new Date(log.timestamp).toLocaleString();
+
+	switch (log.action) {
+		case "task_created":
+			return `${user} created the task on ${time}`;
+		case "task_updated":
+			return `${user} updated the task details on ${time}`;
+		case "assigned_to_task":
+			return `${user} assigned users to the task on ${time}`;
+		case "status_updated":
+			switch (log.status) {
+				case "Done":
+					return `${user} marked the task as Done on ${time}`;
+				case "In Progress":
+					return `${user} started progress on the task on ${time}`;
+				case "To Do":
+					return `${user} moved the task back to To Do on ${time}`;
+				default:
+					return `${user} updated the task status on ${time}`;
+			}
+		default:
+			return `${user} did something on ${time}`;
 	}
 };
