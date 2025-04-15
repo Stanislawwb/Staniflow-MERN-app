@@ -31,8 +31,17 @@ export const formatProjectActivity = (log: ProjectActivity): string => {
 			return `${username} assigned someone to the project on ${time}`;
 		case "project_member_removed":
 			return `${username} removed member from the project on ${time}`;
-		case "archived_project":
-			return `${username} archived the project on ${time}`;
+		case "status_updated":
+			switch (log.status) {
+				case "Completed":
+					return `${username} marked the project as Completed on ${time}`;
+				case "In Progress":
+					return `${username} set the project status back to In Progress on ${time}`;
+				case "Archived":
+					return `${username} archived the project on ${time}`;
+				default:
+					return `${username} updated the project status on ${time}`;
+			}
 		default:
 			return `${username} did something on ${time}`;
 	}

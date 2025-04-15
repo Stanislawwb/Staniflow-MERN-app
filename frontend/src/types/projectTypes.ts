@@ -8,12 +8,13 @@ export interface ProjectActivity {
 		| "project_deleted"
 		| "project_member_added"
 		| "project_member_removed"
-		| "archived_project";
+		| "status_updated";
 	user: {
 		_id: string;
 		username: string;
 	};
 	timestamp: string;
+	status?: "In Progress" | "Completed" | "Archived";
 }
 
 export interface ProjectMember {

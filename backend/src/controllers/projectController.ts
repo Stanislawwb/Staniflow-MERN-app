@@ -200,15 +200,35 @@ export const updateProject: RequestHandler<
 			);
 		}
 
-		if (dueDate) {
-			project.dueDate = new Date(dueDate);
+		let hasNonStatusChanges = false;
+
+		if (status && status !== project.status) {
+			project.status = status;
+
+			project.activityLog.push({
+				action: "status_updated",
+				user: updatedBy,
+				status: status,
+				timestamp: new Date(),
+			});
 		}
 
-		if (title) project.title = title;
-		if (description) project.description = description;
-		if (status) project.status = status;
-		if (tags) project.tags = tags;
-
+		if (title && title !== project.title) {
+			project.title = title;
+			hasNonStatusChanges = true;
+		}
+		if (description && description !== project.description) {
+			project.description = description;
+			hasNonStatusChanges = true;
+		}
+		if (tags) {
+			project.tags = tags;
+			hasNonStatusChanges = true;
+		}
+		if (dueDate) {
+			project.dueDate = new Date(dueDate);
+			hasNonStatusChanges = true;
+		}
 		if (members && Array.isArray(members)) {
 			project.set(
 				"members",
@@ -217,14 +237,16 @@ export const updateProject: RequestHandler<
 					role: member.role || "developer",
 				}))
 			);
+			hasNonStatusChanges = true;
 		}
 
-		project.activityLog.push({
-			action: "project_updated",
-			user: updatedBy,
-			timestamp: new Date(),
-		});
-
+		if (hasNonStatusChanges) {
+			project.activityLog.push({
+				action: "project_updated",
+				user: updatedBy,
+				timestamp: new Date(),
+			});
+		}
 		const updatedProject = await project.save();
 
 		await updatedProject.populate("members.user", "username avatar");

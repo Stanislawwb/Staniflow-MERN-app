@@ -63,9 +63,12 @@ const projectSchema = new Schema(
 							"status_updated",
 							"member_added",
 							"member_removed",
-							"archived_project",
 						],
 						required: true,
+					},
+					status: {
+						type: String,
+						enum: ["In Progress", "Completed", "Archived"],
 					},
 					user: {
 						type: Schema.Types.ObjectId,
