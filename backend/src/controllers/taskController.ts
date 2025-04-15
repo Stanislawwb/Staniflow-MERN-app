@@ -88,17 +88,27 @@ export const createTask: RequestHandler<
 		}
 
 		const newTask = await Task.create(taskData);
+
 		const allTasks = await Task.find({ projectId });
+		const project = await Project.findById(projectId);
+		if (!project) throw createHttpError(404, "Project not found");
 
 		const allDone =
 			allTasks.length > 0 && allTasks.every((t) => t.status === "Done");
 
-		if (allDone) {
-			await Project.findByIdAndUpdate(projectId, { status: "Completed" });
-		} else {
-			await Project.findByIdAndUpdate(projectId, {
-				status: "In Progress",
+		const newStatus = allDone ? "Completed" : "In Progress";
+
+		if (project.status !== newStatus) {
+			project.status = newStatus;
+
+			project.activityLog.push({
+				action: "status_updated",
+				user: userId,
+				status: newStatus,
+				timestamp: new Date(),
 			});
+
+			await project.save();
 		}
 
 		sendWebSocketMessage("TASK_CREATED", { task: newTask });
