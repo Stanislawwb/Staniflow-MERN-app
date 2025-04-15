@@ -1,3 +1,4 @@
+import { useUpdateProjectMutation } from "../../api/projectApi";
 import { DetailedProject, ProjectActivity } from "../../types/projectTypes";
 import {
 	formatDate,
@@ -11,6 +12,21 @@ interface OverviewProps {
 }
 
 const Overview: React.FC<OverviewProps> = ({ project }) => {
+	const [updateProject] = useUpdateProjectMutation();
+
+	const handleArchive = async () => {
+		await updateProject({
+			projectId: project._id,
+			data: { isArchived: true },
+		});
+	};
+
+	const handleUnarchive = async () => {
+		await updateProject({
+			projectId: project._id,
+			data: { isArchived: false },
+		});
+	};
 	return (
 		<div className="overview">
 			<div className="shell">
@@ -72,6 +88,22 @@ const Overview: React.FC<OverviewProps> = ({ project }) => {
 
 							<div className="overview__actions">
 								<button className="btn">Delete Project</button>
+
+								{!project.isArchived ? (
+									<button
+										className="btn"
+										onClick={handleArchive}
+									>
+										Archive Project
+									</button>
+								) : (
+									<button
+										className="btn"
+										onClick={handleUnarchive}
+									>
+										Unarchive Project
+									</button>
+								)}
 							</div>
 						</div>
 

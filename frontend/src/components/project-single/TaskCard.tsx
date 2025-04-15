@@ -5,9 +5,10 @@ import { Task } from "../../types/taskTypes";
 type TaskCardProps = {
 	task: Task;
 	index: number;
+	readOnly?: boolean;
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, index, readOnly }) => {
 	const getPriorityLevel = (priority: string) => {
 		switch (priority.toLowerCase()) {
 			case "low":
@@ -21,12 +22,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
 		}
 	};
 
-	console.log(task);
-
 	const priorityLevel = getPriorityLevel(task?.priority || "");
 
 	return (
-		<Draggable draggableId={task._id} index={index}>
+		<Draggable
+			draggableId={task._id}
+			index={index}
+			isDragDisabled={readOnly}
+		>
 			{(provided) => (
 				<div
 					role="button"

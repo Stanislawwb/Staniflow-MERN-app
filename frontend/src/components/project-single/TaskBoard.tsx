@@ -16,10 +16,14 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ project }) => {
 	if (!projectId) return <Navigate to="/not-found" replace />;
 
 	const { data: tasks = [] } = useGetTasksQuery({ projectId });
+
+	const isArchived = project?.isArchived ?? false;
+
 	const { onDragEnd } = useTaskBoardDrag({
 		projectId,
 		tasks,
 		projectStatus: project?.status,
+		isArchived,
 	});
 
 	const taskStatuses: TaskStatus[] = ["To Do", "In Progress", "Done"];
@@ -27,6 +31,12 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ project }) => {
 	return (
 		<div className="task-board">
 			<div className="shell">
+				{isArchived && (
+					<div className="task-board__archived-banner">
+						This project is archived and read-only.
+					</div>
+				)}
+
 				<div className="task-board__inner">
 					<DragDropContext onDragEnd={onDragEnd}>
 						<div className="task-board__columns">
@@ -37,6 +47,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ project }) => {
 									tasks={tasks.filter(
 										(task) => task.status === status
 									)}
+									readOnly={!!isArchived}
 								/>
 							))}
 						</div>

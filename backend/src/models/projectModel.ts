@@ -14,9 +14,13 @@ const projectSchema = new Schema(
 		},
 		status: {
 			type: String,
-			enum: ["In Progress", "Completed", "Archived"],
+			enum: ["In Progress", "Completed"],
 			default: "In Progress",
 			index: true,
+		},
+		isArchived: {
+			type: Boolean,
+			default: false,
 		},
 		members: [
 			{
@@ -61,6 +65,8 @@ const projectSchema = new Schema(
 							"project_created",
 							"project_updated",
 							"status_updated",
+							"project_archived",
+							"project_unarchived",
 							"member_added",
 							"member_removed",
 						],
@@ -68,7 +74,7 @@ const projectSchema = new Schema(
 					},
 					status: {
 						type: String,
-						enum: ["In Progress", "Completed", "Archived"],
+						enum: ["In Progress", "Completed"],
 					},
 					user: {
 						type: Schema.Types.ObjectId,

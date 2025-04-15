@@ -10,9 +10,10 @@ import { useMemo } from "react";
 type TaskColumnProps = {
 	status: TaskStatus;
 	tasks: Task[];
+	readOnly: boolean;
 };
 
-const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
+const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks, readOnly }) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const { projectId } = useParams();
 
@@ -44,29 +45,32 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ status, tasks }) => {
 								key={task._id}
 								task={task}
 								index={index}
+								readOnly={readOnly}
 							/>
 						))}
 
 						{provided.placeholder}
 					</div>
 
-					<button
-						onClick={() =>
-							dispatch(
-								openModal({
-									type: "task-create",
-									payload: {
-										projectId,
-										defaultValues: {
-											status,
+					{!readOnly && (
+						<button
+							onClick={() =>
+								dispatch(
+									openModal({
+										type: "task-create",
+										payload: {
+											projectId,
+											defaultValues: {
+												status,
+											},
 										},
-									},
-								})
-							)
-						}
-					>
-						Add Task
-					</button>
+									})
+								)
+							}
+						>
+							Add Task
+						</button>
+					)}
 				</div>
 			)}
 		</Droppable>

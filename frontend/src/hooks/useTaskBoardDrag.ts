@@ -10,12 +10,14 @@ interface UseTaskBoardDragProps {
 	projectId: string;
 	tasks: Task[];
 	projectStatus?: string;
+	isArchived: boolean;
 }
 
 const useTaskBoardDrag = ({
 	projectId,
 	tasks,
 	projectStatus,
+	isArchived,
 }: UseTaskBoardDragProps) => {
 	const [reorderTasks] = useReorderTasksMutation();
 	const [updateProject] = useUpdateProjectMutation();
@@ -24,6 +26,10 @@ const useTaskBoardDrag = ({
 
 	// Called when drag operation ends (task dropped)
 	const onDragEnd = async (result: DropResult) => {
+		if (isArchived) {
+			return;
+		}
+
 		const { source, destination, draggableId } = result;
 
 		// If dropped outside a column or not moved at all

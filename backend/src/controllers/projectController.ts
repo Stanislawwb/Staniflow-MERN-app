@@ -17,7 +17,7 @@ type Role = "admin" | "developer" | "guest";
 type CreateProjectBody = {
 	title: string;
 	description?: string;
-	status?: "In Progress" | "Completed" | "Archived";
+	status?: "In Progress" | "Completed";
 	members?: {
 		userId: string;
 		role?: Role;
@@ -154,7 +154,8 @@ type UpdateProjectParams = {
 type UpdateProjectBody = {
 	title: string;
 	description?: string;
-	status?: "In Progress" | "Completed" | "Archived";
+	status?: "In Progress" | "Completed";
+	isArchived: string;
 	members?: {
 		userId: string;
 		role?: "admin" | "editor" | "viewer";
@@ -172,7 +173,15 @@ export const updateProject: RequestHandler<
 	try {
 		const projectId = req.params.projectId;
 
-		const { title, description, status, tags, dueDate, members } = req.body;
+		const {
+			title,
+			description,
+			status,
+			tags,
+			dueDate,
+			members,
+			isArchived,
+		} = req.body;
 
 		const updatedBy = req?.user.id;
 
@@ -247,6 +256,20 @@ export const updateProject: RequestHandler<
 				timestamp: new Date(),
 			});
 		}
+
+		if (
+			typeof isArchived === "boolean" &&
+			isArchived !== project.isArchived
+		) {
+			project.isArchived = isArchived;
+
+			project.activityLog.push({
+				action: isArchived ? "project_archived" : "project_unarchived",
+				user: updatedBy,
+				timestamp: new Date(),
+			});
+		}
+
 		const updatedProject = await project.save();
 
 		await updatedProject.populate("members.user", "username avatar");

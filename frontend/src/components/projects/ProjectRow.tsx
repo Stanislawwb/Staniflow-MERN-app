@@ -40,12 +40,14 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, index }) => {
 			<span
 				role="cell"
 				className={`status ${
-					statusClassMap[
-						project.status as keyof typeof statusClassMap
-					] || ""
+					project.isArchived
+						? "status--red"
+						: statusClassMap[
+								project.status as keyof typeof statusClassMap
+						  ] || ""
 				}`}
 			>
-				{project.status}
+				{project.isArchived ? "Archived" : project.status}
 			</span>
 		</div>
 	);
