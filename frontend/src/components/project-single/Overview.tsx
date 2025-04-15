@@ -1,4 +1,8 @@
-import { useUpdateProjectMutation } from "../../api/projectApi";
+import { toast } from "react-toastify";
+import {
+	useDeleteProjectMutation,
+	useUpdateProjectMutation,
+} from "../../api/projectApi";
 import { DetailedProject, ProjectActivity } from "../../types/projectTypes";
 import {
 	formatDate,
@@ -6,6 +10,7 @@ import {
 	statusClassMap,
 } from "../../utils/helpers";
 import Members from "../Members";
+import { useNavigate } from "react-router-dom";
 
 interface OverviewProps {
 	project: DetailedProject;
@@ -13,6 +18,10 @@ interface OverviewProps {
 
 const Overview: React.FC<OverviewProps> = ({ project }) => {
 	const [updateProject] = useUpdateProjectMutation();
+	const [deleteProject, { isLoading: isDeleting }] =
+		useDeleteProjectMutation();
+
+	const navigate = useNavigate();
 
 	const handleArchive = async () => {
 		await updateProject({
@@ -26,6 +35,27 @@ const Overview: React.FC<OverviewProps> = ({ project }) => {
 			projectId: project._id,
 			data: { isArchived: false },
 		});
+	};
+
+	console.log(project._id);
+
+	const handleDelete = async () => {
+		const confirmed = window.confirm(
+			"Are you sure you want to delete this project?"
+		);
+
+		if (!confirmed) return;
+
+		try {
+			await deleteProject(project._id).unwrap();
+
+			toast.success(`Project "${project.title}" deleted`);
+
+			navigate("/dashboard");
+		} catch (error) {
+			console.error("Failed to delete project", error);
+			toast.error("Failed to delete project. Please try again.");
+		}
 	};
 	return (
 		<div className="overview">
@@ -87,7 +117,15 @@ const Overview: React.FC<OverviewProps> = ({ project }) => {
 							</div>
 
 							<div className="overview__actions">
-								<button className="btn">Delete Project</button>
+								<button
+									className="btn"
+									onClick={handleDelete}
+									disabled={isDeleting}
+								>
+									{isDeleting
+										? "Deleting..."
+										: "Delete Project"}
+								</button>
 
 								{!project.isArchived ? (
 									<button

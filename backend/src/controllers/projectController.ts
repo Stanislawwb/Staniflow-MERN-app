@@ -284,7 +284,7 @@ export const updateProject: RequestHandler<
 
 export const deleteProject: RequestHandler = async (req, res, next) => {
 	try {
-		const projectId = req.params.id;
+		const projectId = req.params.projectId;
 
 		if (!projectId) {
 			throw createHttpError(400, "No project found");
