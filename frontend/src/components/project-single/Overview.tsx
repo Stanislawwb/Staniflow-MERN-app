@@ -37,8 +37,6 @@ const Overview: React.FC<OverviewProps> = ({ project }) => {
 		});
 	};
 
-	console.log(project._id);
-
 	const handleDelete = async () => {
 		const confirmed = window.confirm(
 			"Are you sure you want to delete this project?"

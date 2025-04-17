@@ -9,6 +9,57 @@
 
 	.projects__header {
 		font-weight: 600;
+		position: relative;
+		border-radius: 8px;
+	}
+
+	.project__column-content {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.project__column-content:has(.project__sort) {
+		cursor: pointer;
+	}
+
+	.project__sorting-reset {
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		position: absolute;
+		right: 0;
+		top: 50%;
+		border-top-right-radius: 8px;
+		border-bottom-right-radius: 8px;
+		transform: translateY(-50%);
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		width: 40px;
+		height: 40px;
+		background-color: rgba(156, 163, 175, 0.3);
+		transition: opacity 0.3s, visibility 0.3s;
+	}
+
+	.project__sorting-reset svg {
+		font-size: 17px;
+		color: #000;
+	}
+
+	.project__sorting-reset.active {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: initial;
+	}
+
+	.project__sorting-reset.fading-out {
+		opacity: 0;
+		visibility: visible;
+		pointer-events: none;
 	}
 
 	.project__row {
@@ -36,6 +87,20 @@
 		&:hover {
 			background: rgba(0, 123, 255, 0.1);
 		}
+	}
+
+	.project__sort {
+		margin-left: 5px;
+		opacity: 0.3;
+		transition: transform 0.3s ease, opacity 0.3s ease;
+	}
+
+	.project__sort.active {
+		opacity: 1;
+	}
+
+	.project__sort.rotated {
+		transform: rotate(180deg);
 	}
 
 	.project__row > span {

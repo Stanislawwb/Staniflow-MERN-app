@@ -19,10 +19,21 @@ export const projectApi = api.injectEndpoints({
 			}),
 			invalidatesTags: [{ type: "Projects", id: "LIST" }],
 		}),
-		getProjects: builder.query<DetailedProject[], void>({
-			query: () => ({
-				url: "/projects",
-			}),
+		getProjects: builder.query<
+			DetailedProject[],
+			{ sortBy?: string; sortOrder?: "asc" | "desc" } | void
+		>({
+			query: (params) => {
+				const query = new URLSearchParams();
+
+				if (params && params.sortBy) query.set("sortBy", params.sortBy);
+				if (params && params.sortOrder)
+					query.set("sortOrder", params.sortOrder);
+
+				return {
+					url: `/projects?${query.toString()}`,
+				};
+			},
 			providesTags: (result) =>
 				result
 					? [

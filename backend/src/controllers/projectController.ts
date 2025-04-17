@@ -77,12 +77,25 @@ export const createProject: RequestHandler<
 
 export const getProjects: RequestHandler = async (req, res, next) => {
 	try {
-		const projects: ProjectDocument[] = await Project.find({
+		const { sortBy = "createdAt", sortOrder = "desc" } = req.query;
+
+		const sortField = typeof sortBy === "string" ? sortBy : "createdAt";
+		const sortDirection = sortOrder === "asc" ? 1 : -1;
+
+		const query = Project.find({
 			$or: [
 				{ createdBy: req.user._id },
 				{ "members.user": req.user._id },
 			],
-		})
+		});
+
+		if (sortField === "title") {
+			query.collation({ locale: "en", strength: 1 });
+		}
+
+		query.sort({ [sortField]: sortDirection });
+
+		const projects: ProjectDocument[] = await query
 			.populate("createdBy", "username")
 			.populate("members.user", "username avatar");
 
